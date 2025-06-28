@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>バス停のサイトに移動します</title>
+</head>
+<body>
+    <h1>外部サイトに移動します</h1>
+
+    <script>
+        // デバイスがモバイルかどうかを判定する関数
+        function isMobileDevice() {
+            const userAgent = navigator.userAgent;
+            // 一般的なモバイルデバイスのキーワードを正規表現でチェック
+            // iPadもモバイルとして扱う場合に適しています。
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+        }
+
+        // ページが完全に読み込まれた後に実行
+        window.onload = function() {
+            if (isMobileDevice()) {
+                // モバイルデバイスの場合のリダイレクト先URL
+                window.location.replace("https://www.kanachu.co.jp/sp/diagram/timetable?k=%E9%AB%98%E6%A0%A1%E5%85%A5%E5%8F%A3%28%E7%9B%B8%E6%A8%A1%E5%8E%9F%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA%29&t=0&cs=0000802384-4&nid=00129140"); 
+                // replace()を使うとブラウザの「戻る」ボタンで前のページに戻れなくなります。
+                // 戻れるようにしたい場合は window.location.href = "..." を使います。
+            } else {
+                // PCデバイスの場合のリダイレクト先URL
+                window.location.replace("https://www.kanachu.co.jp/dia/diagram/timetable/cs:0000802384-4/nid:00129140");
+            }
+        };
+    </script>
+</body>
+</html>
