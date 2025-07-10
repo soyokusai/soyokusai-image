@@ -17,7 +17,7 @@
 
         // ページが完全に読み込まれた後に実行
         window.onload = function() {
-            if (isMobileDevice()) {
+            if (isMobileDeviceByWidth()) {
                 // モバイルデバイスの場合のリダイレクト先URL
                 window.location.replace("https://www.kanachu.co.jp/sp/diagram/timetable?k=%E4%B8%8A%E6%BA%9D&t=0&cs=0000802360-1&nid=00129347"); 
                 // replace()を使うとブラウザの「戻る」ボタンで前のページに戻れなくなります。
