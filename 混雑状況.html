@@ -6,9 +6,16 @@
     <title>文化祭 企画別混雑状況</title>
     <style>
         /* 学年ごとの背景色 */
-.year-1-row { background-color: #ff2800; } 
-.year-2-row { background-color: #35a16b; }
-.year-3-row { background-color: #0041ff; } 
+/* 学年のセルごとの背景色 */
+.year-cell-1 { background-color: #ff2800; }
+.year-cell-2 { background-color: #35a16b; } /* 2年生：ピンク系 */
+.year-cell-3 { background-color: #0041ff; } /* 3年生：ミントグリーン系 */
+/* 必要に応じて他の学年の色も追加 */
+
+/* 文字色が見にくい場合は調整 */
+.year-cell-1, .year-cell-2, .year-cell-3 {
+    color: #ffffff; /* デフォルトの文字色か、必要に応じて調整 */
+}
         /* ジャンルごとの文字色 */
 .genre-パフォーマンス { color: #ff2800; font-weight: bold; }
 .genre-アトラクション { color: #35a16b; font-weight: bold; } 
@@ -446,12 +453,6 @@ function renderTable(eventsToDisplay) {
         eventsToDisplay.forEach(item => {
             const row = document.createElement('tr');
 
-            // ★学年ごとの行の背景色を追加★
-            if (item.年) {
-                // クラス名に使えるように、半角数字を直接利用
-                row.classList.add(`year-${item.年}-row`); 
-            }
-
             // 企画名
             const nameCell = document.createElement('td');
             if (item.リンクURL && item.リンクURL.startsWith('http')) {
@@ -466,9 +467,13 @@ function renderTable(eventsToDisplay) {
             }
             row.appendChild(nameCell);
 
-            // 年
+            // 年のセル
             const yearCell = document.createElement('td');
             yearCell.textContent = item.年 || ''; 
+            // ★ここに学年のセルに色を塗るロジックを追加★
+            if (item.年) {
+                yearCell.classList.add(`year-cell-${item.年}`); 
+            }
             row.appendChild(yearCell);
 
             // 組
@@ -496,13 +501,12 @@ function renderTable(eventsToDisplay) {
             roomNameCell.textContent = item.使用教室名 || '';
             row.appendChild(roomNameCell);
 
-            // ジャンル
+            // ジャンル (ジャンルのセルの色付けを残す場合はそのまま)
             const genreCell = document.createElement('td');
             genreCell.textContent = item.ジャンル || '';
-            // ★ジャンルごとの文字色を追加★
             if (item.ジャンル) {
-                // クラス名に使えるように、特殊文字を排除するなどの処理が必要になる場合がある。
-                // ここでは単純に文字列をそのまま利用。CSS側でクラス名を正確に合わせる。
+                // ジャンルのクラス名にスペースや特殊文字が含まれる場合はCSSと一致させるか、変換ロジックを追加
+                // 例: item.ジャンル.replace(/[^a-zA-Z0-9]/g, '') で安全なクラス名を生成
                 genreCell.classList.add(`genre-${item.ジャンル}`); 
             }
             row.appendChild(genreCell);
