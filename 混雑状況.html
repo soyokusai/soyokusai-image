@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文化祭 企画別混雑状況</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 10px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.8em;
+        }
+
+        /* 最終更新日時表示エリア */
+        #lastUpdateTimeContainer {
+            max-width: 960px;
+            margin: 0 auto 15px;
+            padding: 10px 15px;
+            background-color: #e9eef6;
+            border-radius: 8px;
+            text-align: right;
+            font-size: 0.9em;
+            color: #555;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        /* フィルターと検索コンテナ */
+        .filter-search-container {
+            max-width: 960px;
+            margin: 0 auto 20px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .filter-group label {
+            font-weight: bold;
+            color: #34495e;
+            font-size: 0.9em;
+        }
+        .filter-search-container select,
+        .filter-search-container input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 0.9em;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        /* チェックボックスグループのスタイル */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap; /* 小さい画面で折り返す */
+            gap: 10px 15px; /* チェックボックス間のスペース */
+            padding-top: 5px; /* ラベルとの間隔 */
+        }
+        .checkbox-group label {
+            font-weight: normal; /* チェックボックスのラベルは太字にしない */
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #333;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 5px;
+            transform: scale(1.1); /* チェックボックスを少し大きく表示 */
+        }
+
+
+        /* テーブルコンテナ */
+        .event-table-container {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .event-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        .event-table th,
+        .event-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        .event-table th {
+            background-color: #eef2f7;
+            color: #4a5568;
+            font-weight: bold;
+            text-transform: uppercase;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.05);
+        }
+        .event-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .event-table td a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .event-table td a:hover {
+            text-decoration: underline;
+        }
+
+        /* 混雑状況セルのスタイル */
+        .crowd-status-cell {
+            text-align: center;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        .status-empty { background-color: #d4edda; color: #155724; }
+        .status-normal { background-color: #ffeeba; color: #856404; }
+        .status-crowded { background-color: #f8d7da; color: #721c24; }
+        .status-full { background-color: #cce5ff; color: #004085; }
+
+        /* ローディングメッセージ */
+        #loading {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 1.1em;
+        }
+        #noResults {
+            text-align: center;
+            padding: 20px;
+            color: #555;
+            display: none;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <h1>文化祭 企画別混雑状況</h1>
+
+    <div id="lastUpdateTimeContainer">
+        最終更新: <span id="lastUpdateTime">--/-- --:--</span>
+    </div>
+
+    <div class="filter-search-container">
+        <div class="filter-group">
+            <label for="eventNameFilter">企画名:</label>
+            <input type="text" id="eventNameFilter" placeholder="企画名を入力">
+        </div>
+        <div class="filter-group">
+            <label for="yearFilter">年:</label>
+            <select id="yearFilter">
+                <option value="">すべて</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="classFilter">組:</label>
+            <select id="classFilter">
+                <option value="">すべて</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="groupNameFilter">団体名:</label>
+            <input type="text" id="groupNameFilter" placeholder="団体名を入力">
+        </div>
+        <div class="filter-group">
+            <label for="buildingFilter">場所(棟):</label>
+            <select id="buildingFilter">
+                <option value="">すべて</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="floorFilter">場所(階):</label>
+            <select id="floorFilter">
+                <option value="">すべて</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="roomNameFilter">使用教室名:</label>
+            <select id="roomNameFilter">
+                <option value="">すべて</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="genreFilter">ジャンル:</label>
+            <select id="genreFilter">
+                <option value="">すべて</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label>状況:</label>
+            <div class="checkbox-group" id="statusCheckboxes">
+                <label>
+                    <input type="checkbox" name="status" value="空いています" checked> 空いています
+                </label>
+                <label>
+                    <input type="checkbox" name="status" value="やや混雑" checked> やや混雑
+                </label>
+                <label>
+                    <input type="checkbox" name="status" value="混雑" checked> 混雑
+                </label>
+                <label>
+                    <input type="checkbox" name="status" value="満員御礼" checked> 満員御礼
+                </label>
+                </div>
+        </div>
+    </div>
+
+    <div id="loading">混雑状況を読み込み中...</div>
+    <div class="event-table-container">
+        <table class="event-table" id="crowdStatusTable">
+            <thead>
+                <tr>
+                    <th>企画名</th>
+                    <th>年</th>
+                    <th>組</th>
+                    <th>団体名</th>
+                    <th>場所(棟)</th>
+                    <th>場所(階)</th>
+                    <th>使用教室名</th>
+                    <th>ジャンル</th>
+                    <th>状況</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+        <p id="noResults">検索条件に合う企画が見つかりませんでした。</p>
+    </div>
+
+    <script>
+        // ★★★ここにデプロイしたGASのウェブアプリURLを貼り付けてください★★★
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwOm38pj-RhWN8VMvMM6vNW1t9mOoRkxNRKn7EanYyk7CqHBMngQZv7fUbskjCtgpzwLw/exec'; 
+
+        let allEventsData = []; 
+        let uniqueYears = new Set(); 
+        let uniqueClasses = new Set(); 
+        let uniqueBuildings = new Set(); 
+        let uniqueFloors = new Set();
+        let uniqueRoomNames = new Set(); 
+        let uniqueGenres = new Set();
+
+        // データをGASから取得し、初期表示とフィルターオプションを設定
+        async function fetchCrowdStatus() {
+            const loadingElement = document.getElementById('loading');
+            const tableBody = document.querySelector('#crowdStatusTable tbody');
+            const noResultsElement = document.getElementById('noResults');
+            const lastUpdateTimeElement = document.getElementById('lastUpdateTime');
+            
+            tableBody.innerHTML = ''; 
+            noResultsElement.style.display = 'none'; 
+            lastUpdateTimeElement.textContent = '--/-- --:--'; 
+
+            try {
+                loadingElement.style.display = 'block'; 
+                const response = await fetch(GAS_WEB_APP_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                allEventsData = await response.json();
+
+                if (allEventsData.length === 0) {
+                    noResultsElement.textContent = '現在、表示できる企画情報がありません。';
+                    noResultsElement.style.display = 'block';
+                    return;
+                }
+
+                // ユニークな値を収集し、フィルターオプションを生成
+                allEventsData.forEach(item => {
+                    if (item.年) uniqueYears.add(item.年);
+                    if (item.組) uniqueClasses.add(item.組);
+                    if (item['場所(棟)']) uniqueBuildings.add(item['場所(棟)']);
+                    if (item['場所(階)']) uniqueFloors.add(item['場所(階)']);
+                    if (item.使用教室名) uniqueRoomNames.add(item.使用教室名);
+                    if (item.ジャンル) uniqueGenres.add(item.ジャンル);
+                });
+
+                populateFilter('yearFilter', uniqueYears, '年生');
+                populateFilter('classFilter', uniqueClasses);
+                populateFilter('buildingFilter', uniqueBuildings);
+                populateFilter('floorFilter', uniqueFloors);
+                populateFilter('roomNameFilter', uniqueRoomNames);
+                populateFilter('genreFilter', uniqueGenres);
+
+                // 最終更新日時を計算して表示
+                let latestUpdateTime = null;
+                allEventsData.forEach(item => {
+                    const itemUpdateTime = item.更新 || item.更新時刻;
+                    if (itemUpdateTime) {
+                        const currentItemDate = new Date(itemUpdateTime);
+                        if (!latestUpdateTime || currentItemDate > latestUpdateTime) {
+                            latestUpdateTime = currentItemDate;
+                        }
+                    }
+                });
+
+                if (latestUpdateTime) {
+                    lastUpdateTimeElement.textContent = latestUpdateTime.toLocaleString('ja-JP', { 
+                        year: 'numeric', month: '2-digit', day: '2-digit', 
+                        hour: '2-digit', minute: '2-digit' 
+                    });
+                }
+
+                applyFilters(); // 初回表示時にフィルターを適用（全て表示）
+
+            } catch (error) {
+                console.error('混雑状況の取得に失敗しました:', error);
+                noResultsElement.textContent = '混雑状況の読み込み中にエラーが発生しました。';
+                noResultsElement.style.display = 'block';
+            } finally {
+                loadingElement.style.display = 'none'; 
+            }
+        }
+
+        // フィルターのオプションを生成する汎用関数 (変更なし)
+        function populateFilter(filterId, uniqueValuesSet, suffix = '') {
+            const filterElement = document.getElementById(filterId);
+            // ドロップダウンの場合のみ既存の"すべて"以外をクリア
+            if (filterElement.tagName === 'SELECT') {
+                Array.from(filterElement.options).forEach((option, index) => {
+                    if (index > 0) option.remove();
+                });
+            }
+
+            // チェックボックスの場合はこの関数ではオプションを生成しない
+            if (filterElement.type === 'checkbox') return; // ここを変更
+
+            const valuesArray = Array.from(uniqueValuesSet).filter(Boolean);
+
+            valuesArray.sort((a, b) => {
+                const numA = parseFloat(a);
+                const numB = parseFloat(b);
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return numA - numB;
+                }
+                return String(a).localeCompare(String(b));
+            }).forEach(value => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = value + suffix;
+                filterElement.appendChild(option);
+            });
+        }
+
+        // フィルターと検索を適用してテーブルを更新する関数
+        function applyFilters() {
+            const eventNameFilter = document.getElementById('eventNameFilter').value.toLowerCase();
+            const yearFilter = document.getElementById('yearFilter').value;
+            const classFilter = document.getElementById('classFilter').value;
+            const groupNameFilter = document.getElementById('groupNameFilter').value.toLowerCase();
+            const buildingFilter = document.getElementById('buildingFilter').value;
+            const floorFilter = document.getElementById('floorFilter').value;
+            const roomNameFilter = document.getElementById('roomNameFilter').value;
+            const genreFilter = document.getElementById('genreFilter').value;
+            
+            // 状況フィルター (チェックボックス対応)
+            const statusCheckboxes = document.querySelectorAll('input[name="status"]:checked');
+            const selectedStatuses = Array.from(statusCheckboxes).map(checkbox => checkbox.value);
+            
+            const filteredEvents = allEventsData.filter(item => {
+                // 企画名フィルター
+                if (eventNameFilter && !(item.企画名 && item.企画名.toLowerCase().includes(eventNameFilter))) return false;
+                // 年フィルター
+                if (yearFilter && !(item.年 && item.年 == yearFilter)) return false;
+                // 組フィルター
+                if (classFilter && !(item.組 && item.組 == classFilter)) return false;
+                // 団体名フィルター
+                if (groupNameFilter && !(item.団体名 && item.団体名.toLowerCase().includes(groupNameFilter))) return false;
+                // 場所(棟)フィルター
+                if (buildingFilter && !(item['場所(棟)'] && item['場所(棟)'] == buildingFilter)) return false;
+                // 場所(階)フィルター
+                if (floorFilter && !(item['場所(階)'] && item['場所(階)'] == floorFilter)) return false;
+                // 使用教室名フィルター
+                if (roomNameFilter && !(item.使用教室名 && item.使用教室名 == roomNameFilter)) return false;
+                // ジャンルフィルター
+                if (genreFilter && !(item.ジャンル && item.ジャンル == genreFilter)) return false;
+                
+                // 状況フィルター (チェックボックス対応)
+                if (selectedStatuses.length > 0) { // 何か選択されている場合のみフィルターを適用
+                    if (!selectedStatuses.includes(item.状況)) {
+                        return false;
+                    }
+                } else {
+                    // 何もチェックされていない場合は、すべての状況を表示しない（完全に非表示にする）
+                    // もし「何もチェックされていない場合は全ての状況を表示する」としたい場合は、
+                    // このelseブロックを削除してください。
+                    return false; 
+                }
+                
+                return true; 
+            });
+
+            renderTable(filteredEvents); 
+        }
+
+        // データを元にHTMLテーブルをレンダリングする関数 (変更なし)
+        function renderTable(eventsToDisplay) {
+            const tableBody = document.querySelector('#crowdStatusTable tbody');
+            const noResultsElement = document.getElementById('noResults');
+            tableBody.innerHTML = ''; 
+
+            if (eventsToDisplay.length === 0) {
+                noResultsElement.textContent = '検索条件に合う企画が見つかりませんでした。';
+                noResultsElement.style.display = 'block';
+            } else {
+                noResultsElement.style.display = 'none';
+                eventsToDisplay.forEach(item => {
+                    const row = document.createElement('tr');
+
+                    // 企画名
+                    const nameCell = document.createElement('td');
+                    if (item.リンクURL && item.リンクURL.startsWith('http')) {
+                        const link = document.createElement('a');
+                        link.href = item.リンクURL;
+                        link.textContent = item.企画名 || '';
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        nameCell.appendChild(link);
+                    } else {
+                        nameCell.textContent = item.企画名 || '';
+                    }
+                    row.appendChild(nameCell);
+
+                    // 年
+                    const yearCell = document.createElement('td');
+                    yearCell.textContent = item.年 ? item.年 + '年生' : '';
+                    row.appendChild(yearCell);
+
+                    // 組
+                    const classCell = document.createElement('td');
+                    classCell.textContent = item.組 || '';
+                    row.appendChild(classCell);
+
+                    // 団体名
+                    const groupNameCell = document.createElement('td');
+                    groupNameCell.textContent = item.団体名 || '';
+                    row.appendChild(groupNameCell);
+
+                    // 場所(棟)
+                    const buildingCell = document.createElement('td');
+                    buildingCell.textContent = item['場所(棟)'] || '';
+                    row.appendChild(buildingCell);
+
+                    // 場所(階)
+                    const floorCell = document.createElement('td');
+                    floorCell.textContent = item['場所(階)'] || '';
+                    row.appendChild(floorCell);
+
+                    // 使用教室名
+                    const roomNameCell = document.createElement('td');
+                    roomNameCell.textContent = item.使用教室名 || '';
+                    row.appendChild(roomNameCell);
+
+                    // ジャンル
+                    const genreCell = document.createElement('td');
+                    genreCell.textContent = item.ジャンル || '';
+                    row.appendChild(genreCell);
+
+                    // 状況
+                    const statusCell = document.createElement('td');
+                    statusCell.classList.add('crowd-status-cell');
+                    let statusClass = '';
+                    switch (item.状況) {
+                        case '空いています': statusClass = 'status-empty'; break;
+                        case 'やや混雑': statusClass = 'status-normal'; break;
+                        case '混雑': statusClass = 'status-crowded'; break;
+                        case '満員御礼': statusClass = 'status-full'; break;
+                        default: statusClass = '';
+                    }
+                    statusCell.classList.add(statusClass);
+                    statusCell.textContent = item.状況 || '';
+                    row.appendChild(statusCell);
+
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        // イベントリスナーの設定
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('eventNameFilter').addEventListener('keyup', applyFilters);
+            document.getElementById('yearFilter').addEventListener('change', applyFilters);
+            document.getElementById('classFilter').addEventListener('change', applyFilters);
+            document.getElementById('groupNameFilter').addEventListener('keyup', applyFilters);
+            document.getElementById('buildingFilter').addEventListener('change', applyFilters);
+            document.getElementById('floorFilter').addEventListener('change', applyFilters);
+            document.getElementById('roomNameFilter').addEventListener('change', applyFilters);
+            document.getElementById('genreFilter').addEventListener('change', applyFilters);
+            
+            // 状況チェックボックスグループにイベントリスナーを登録
+            // 各チェックボックスが変更されたときにapplyFiltersを呼び出す
+            document.getElementById('statusCheckboxes').addEventListener('change', applyFilters); 
+            
+            fetchCrowdStatus();
+
+            // 5分ごとに自動更新 (任意)
+            // setInterval(fetchCrowdStatus, 5 * 60 * 1000); 
+        });
+    </script>
+</body>
+</html>
