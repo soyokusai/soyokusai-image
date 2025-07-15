@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文化祭 企画別混雑状況</title>
     <style>
+        /* 学年ごとの背景色 */
+.year-1-row { background-color: #ff2800; } 
+.year-2-row { background-color: #35a16b; }
+.year-3-row { background-color: #0041ff; } 
+        /* ジャンルごとの文字色 */
+.genre-パフォーマンス { color: #ff2800; font-weight: bold; }
+.genre-アトラクション { color: #35a16b; font-weight: bold; } 
+.genre-模擬店 { color: #0041ff; font-weight: bold; } 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 10px;
@@ -425,92 +433,101 @@
         }
 
         // データを元にHTMLテーブルをレンダリングする関数
-        function renderTable(eventsToDisplay) {
-            const tableBody = document.querySelector('#crowdStatusTable tbody');
-            const noResultsElement = document.getElementById('noResults');
-            tableBody.innerHTML = ''; 
+function renderTable(eventsToDisplay) {
+    const tableBody = document.querySelector('#crowdStatusTable tbody');
+    const noResultsElement = document.getElementById('noResults');
+    tableBody.innerHTML = ''; 
 
-            if (eventsToDisplay.length === 0) {
-                noResultsElement.textContent = '検索条件に合う企画が見つかりませんでした。';
-                noResultsElement.style.display = 'block';
-            } else {
-                noResultsElement.style.display = 'none';
-                eventsToDisplay.forEach(item => {
-                    const row = document.createElement('tr');
+    if (eventsToDisplay.length === 0) {
+        noResultsElement.textContent = '検索条件に合う企画が見つかりませんでした。';
+        noResultsElement.style.display = 'block';
+    } else {
+        noResultsElement.style.display = 'none';
+        eventsToDisplay.forEach(item => {
+            const row = document.createElement('tr');
 
-                    // 企画名
-                    const nameCell = document.createElement('td');
-                    if (item.リンクURL && item.リンクURL.startsWith('http')) {
-                        const link = document.createElement('a');
-                        link.href = item.リンクURL;
-                        link.textContent = item.企画名 || '';
-                        link.target = '_blank';
-                        link.rel = 'noopener noreferrer';
-                        nameCell.appendChild(link);
-                    } else {
-                        nameCell.textContent = item.企画名 || '';
-                    }
-                    row.appendChild(nameCell);
-
-                    // 年
-                    const yearCell = document.createElement('td');
-                    // 年表示から「年生」を削除
-                    yearCell.textContent = item.年 || ''; 
-                    row.appendChild(yearCell);
-
-                    // 組
-                    const classCell = document.createElement('td');
-                    classCell.textContent = item.組 || '';
-                    row.appendChild(classCell);
-
-                    // 団体名
-                    const groupNameCell = document.createElement('td');
-                    groupNameCell.textContent = item.団体名 || '';
-                    row.appendChild(groupNameCell);
-
-                    // 場所(棟)
-                    const buildingCell = document.createElement('td');
-                    buildingCell.textContent = item['場所(棟)'] || '';
-                    row.appendChild(buildingCell);
-
-                    // 場所(階)
-                    const floorCell = document.createElement('td');
-                    floorCell.textContent = item['場所(階)'] || '';
-                    row.appendChild(floorCell);
-
-                    // 使用教室名
-                    const roomNameCell = document.createElement('td');
-                    roomNameCell.textContent = item.使用教室名 || '';
-                    row.appendChild(roomNameCell);
-
-                    // ジャンル
-                    const genreCell = document.createElement('td');
-                    genreCell.textContent = item.ジャンル || '';
-                    row.appendChild(genreCell);
-
-                    // 状況
-                    const statusCell = document.createElement('td');
-                    statusCell.classList.add('crowd-status-cell');
-                    let statusClass = '';
-                    // 新しい状況名に合わせてクラス名を割り当て
-                    switch (item.状況) {
-                        case '実施していない': statusClass = 'status-実施していない'; break;
-                        case '待ち時間なし': statusClass = 'status-待ち時間なし'; break;
-                        case '10分未満': statusClass = 'status-10分未満'; break;
-                        case '10分以上': statusClass = 'status-10分以上'; break;
-                        case '30分以上': statusClass = 'status-30分以上'; break;
-                        case '売り切れ': statusClass = 'status-売り切れ'; break;
-                        default: statusClass = '';
-                    }
-                    statusCell.classList.add(statusClass);
-                    statusCell.textContent = item.状況 || '';
-                    row.appendChild(statusCell);
-
-                    tableBody.appendChild(row);
-                });
+            // ★学年ごとの行の背景色を追加★
+            if (item.年) {
+                // クラス名に使えるように、半角数字を直接利用
+                row.classList.add(`year-${item.年}-row`); 
             }
-        }
 
+            // 企画名
+            const nameCell = document.createElement('td');
+            if (item.リンクURL && item.リンクURL.startsWith('http')) {
+                const link = document.createElement('a');
+                link.href = item.リンクURL;
+                link.textContent = item.企画名 || '';
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                nameCell.appendChild(link);
+            } else {
+                nameCell.textContent = item.企画名 || '';
+            }
+            row.appendChild(nameCell);
+
+            // 年
+            const yearCell = document.createElement('td');
+            yearCell.textContent = item.年 || ''; 
+            row.appendChild(yearCell);
+
+            // 組
+            const classCell = document.createElement('td');
+            classCell.textContent = item.組 || '';
+            row.appendChild(classCell);
+
+            // 団体名
+            const groupNameCell = document.createElement('td');
+            groupNameCell.textContent = item.団体名 || '';
+            row.appendChild(groupNameCell);
+
+            // 場所(棟)
+            const buildingCell = document.createElement('td');
+            buildingCell.textContent = item['場所(棟)'] || '';
+            row.appendChild(buildingCell);
+
+            // 場所(階)
+            const floorCell = document.createElement('td');
+            floorCell.textContent = item['場所(階)'] || '';
+            row.appendChild(floorCell);
+
+            // 使用教室名
+            const roomNameCell = document.createElement('td');
+            roomNameCell.textContent = item.使用教室名 || '';
+            row.appendChild(roomNameCell);
+
+            // ジャンル
+            const genreCell = document.createElement('td');
+            genreCell.textContent = item.ジャンル || '';
+            // ★ジャンルごとの文字色を追加★
+            if (item.ジャンル) {
+                // クラス名に使えるように、特殊文字を排除するなどの処理が必要になる場合がある。
+                // ここでは単純に文字列をそのまま利用。CSS側でクラス名を正確に合わせる。
+                genreCell.classList.add(`genre-${item.ジャンル}`); 
+            }
+            row.appendChild(genreCell);
+
+            // 状況
+            const statusCell = document.createElement('td');
+            statusCell.classList.add('crowd-status-cell');
+            let statusClass = '';
+            switch (item.状況) {
+                case '実施していない': statusClass = 'status-実施していない'; break;
+                case '待ち時間なし': statusClass = 'status-待ち時間なし'; break;
+                case '10分未満': statusClass = 'status-10分未満'; break;
+                case '10分以上': statusClass = 'status-10分以上'; break;
+                case '30分以上': statusClass = 'status-30分以上'; break;
+                case '売り切れ': statusClass = 'status-売り切れ'; break;
+                default: statusClass = '';
+            }
+            statusCell.classList.add(statusClass);
+            statusCell.textContent = item.状況 || '';
+            row.appendChild(statusCell);
+
+            tableBody.appendChild(row);
+        });
+    }
+}
         // イベントリスナーの設定
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('eventNameFilter').addEventListener('keyup', applyFilters);
