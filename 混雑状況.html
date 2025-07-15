@@ -135,10 +135,14 @@
             border-radius: 4px;
             font-size: 0.85em;
         }
-        .status-empty { background-color: #d4edda; color: #155724; }
-        .status-normal { background-color: #ffeeba; color: #856404; }
-        .status-crowded { background-color: #f8d7da; color: #721c24; }
-        .status-full { background-color: #cce5ff; color: #004085; }
+        /* 新しい状況名に合わせて色を調整 */
+        .status-実施していない { background-color: #e0e0e0; color: #555; } /* グレー系 */
+        .status-待ち時間なし { background-color: #d4edda; color: #155724; } /* 緑系 (空いています) */
+        .status-10分未満 { background-color: #ffeeba; color: #856404; } /* 黄色系 (やや混雑) */
+        .status-10分以上 { background-color: #f8d7da; color: #721c24; } /* 赤系 (混雑) */
+        .status-30分以上 { background-color: #d6b0da; color: #6a1a77; } /* 紫系 (超混雑) */
+        .status-売り切れ { background-color: #cce5ff; color: #004085; } /* 青系 (満員御礼) */
+
 
         /* ローディングメッセージ */
         #loading {
@@ -213,18 +217,24 @@
             <label>状況:</label>
             <div class="checkbox-group" id="statusCheckboxes">
                 <label>
-                    <input type="checkbox" name="status" value="空いています" checked> 空いています
+                    <input type="checkbox" name="status" value="実施していない" checked> 実施していない
                 </label>
                 <label>
-                    <input type="checkbox" name="status" value="やや混雑" checked> やや混雑
+                    <input type="checkbox" name="status" value="待ち時間なし" checked> 待ち時間なし
                 </label>
                 <label>
-                    <input type="checkbox" name="status" value="混雑" checked> 混雑
+                    <input type="checkbox" name="status" value="10分未満" checked> 10分未満
                 </label>
                 <label>
-                    <input type="checkbox" name="status" value="満員御礼" checked> 満員御礼
+                    <input type="checkbox" name="status" value="10分以上" checked> 10分以上
                 </label>
-                </div>
+                <label>
+                    <input type="checkbox" name="status" value="30分以上" checked> 30分以上
+                </label>
+                <label>
+                    <input type="checkbox" name="status" value="売り切れ" checked> 売り切れ
+                </label>
+            </div>
         </div>
     </div>
 
@@ -297,7 +307,8 @@
                     if (item.ジャンル) uniqueGenres.add(item.ジャンル);
                 });
 
-                populateFilter('yearFilter', uniqueYears, '年生');
+                // 年のフィルターは「年生」サフィックスなしで
+                populateFilter('yearFilter', uniqueYears); 
                 populateFilter('classFilter', uniqueClasses);
                 populateFilter('buildingFilter', uniqueBuildings);
                 populateFilter('floorFilter', uniqueFloors);
@@ -334,7 +345,7 @@
             }
         }
 
-        // フィルターのオプションを生成する汎用関数 (変更なし)
+        // フィルターのオプションを生成する汎用関数
         function populateFilter(filterId, uniqueValuesSet, suffix = '') {
             const filterElement = document.getElementById(filterId);
             // ドロップダウンの場合のみ既存の"すべて"以外をクリア
@@ -345,7 +356,7 @@
             }
 
             // チェックボックスの場合はこの関数ではオプションを生成しない
-            if (filterElement.type === 'checkbox') return; // ここを変更
+            if (filterElement.type === 'checkbox' || filterId === 'statusCheckboxes') return; 
 
             const valuesArray = Array.from(uniqueValuesSet).filter(Boolean);
 
@@ -398,14 +409,12 @@
                 if (genreFilter && !(item.ジャンル && item.ジャンル == genreFilter)) return false;
                 
                 // 状況フィルター (チェックボックス対応)
-                if (selectedStatuses.length > 0) { // 何か選択されている場合のみフィルターを適用
+                if (selectedStatuses.length > 0) { 
                     if (!selectedStatuses.includes(item.状況)) {
                         return false;
                     }
                 } else {
                     // 何もチェックされていない場合は、すべての状況を表示しない（完全に非表示にする）
-                    // もし「何もチェックされていない場合は全ての状況を表示する」としたい場合は、
-                    // このelseブロックを削除してください。
                     return false; 
                 }
                 
@@ -415,7 +424,7 @@
             renderTable(filteredEvents); 
         }
 
-        // データを元にHTMLテーブルをレンダリングする関数 (変更なし)
+        // データを元にHTMLテーブルをレンダリングする関数
         function renderTable(eventsToDisplay) {
             const tableBody = document.querySelector('#crowdStatusTable tbody');
             const noResultsElement = document.getElementById('noResults');
@@ -445,7 +454,8 @@
 
                     // 年
                     const yearCell = document.createElement('td');
-                    yearCell.textContent = item.年 ? item.年 + '年生' : '';
+                    // 年表示から「年生」を削除
+                    yearCell.textContent = item.年 || ''; 
                     row.appendChild(yearCell);
 
                     // 組
@@ -482,11 +492,14 @@
                     const statusCell = document.createElement('td');
                     statusCell.classList.add('crowd-status-cell');
                     let statusClass = '';
+                    // 新しい状況名に合わせてクラス名を割り当て
                     switch (item.状況) {
-                        case '空いています': statusClass = 'status-empty'; break;
-                        case 'やや混雑': statusClass = 'status-normal'; break;
-                        case '混雑': statusClass = 'status-crowded'; break;
-                        case '満員御礼': statusClass = 'status-full'; break;
+                        case '実施していない': statusClass = 'status-実施していない'; break;
+                        case '待ち時間なし': statusClass = 'status-待ち時間なし'; break;
+                        case '10分未満': statusClass = 'status-10分未満'; break;
+                        case '10分以上': statusClass = 'status-10分以上'; break;
+                        case '30分以上': statusClass = 'status-30分以上'; break;
+                        case '売り切れ': statusClass = 'status-売り切れ'; break;
                         default: statusClass = '';
                     }
                     statusCell.classList.add(statusClass);
@@ -510,7 +523,6 @@
             document.getElementById('genreFilter').addEventListener('change', applyFilters);
             
             // 状況チェックボックスグループにイベントリスナーを登録
-            // 各チェックボックスが変更されたときにapplyFiltersを呼び出す
             document.getElementById('statusCheckboxes').addEventListener('change', applyFilters); 
             
             fetchCrowdStatus();
