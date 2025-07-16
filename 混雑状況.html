@@ -299,18 +299,19 @@
     <div class="event-table-container">
         <table class="event-table" id="crowdStatusTable">
             <thead>
-                <tr>
-                    <th>企画名</th>
-                    <th>年</th>
-                    <th>組</th>
-                    <th>団体名</th>
-                    <th>場所(棟)</th>
-                    <th>場所(階)</th>
-                    <th>使用教室名</th>
-                    <th>ジャンル</th>
-                    <th>状況</th>
-                    <th>コメント</th> </tr>
-            </thead>
+    <tr>
+        <th>企画名</th>
+        <th>状況</th>
+        <th>コメント</th>
+        <th>年</th>
+        <th>組</th>
+        <th>団体名</th>
+        <th>場所(棟)</th>
+        <th>場所(階)</th>
+        <th>使用教室名</th>
+        <th>ジャンル</th>
+    </tr>
+</thead>
             <tbody>
                 </tbody>
         </table>
@@ -515,101 +516,105 @@
         }
 
         // データを元にHTMLテーブルをレンダリングする関数
-        function renderTable(eventsToDisplay) {
-            const tableBody = document.querySelector('#crowdStatusTable tbody');
-            const noResultsElement = document.getElementById('noResults');
-            tableBody.innerHTML = ''; 
+function renderTable(eventsToDisplay) {
+    const tableBody = document.querySelector('#crowdStatusTable tbody');
+    const noResultsElement = document.getElementById('noResults');
+    tableBody.innerHTML = ''; 
 
-            if (eventsToDisplay.length === 0) {
-                noResultsElement.textContent = '検索条件に合う企画が見つかりませんでした。';
-                noResultsElement.style.display = 'block';
+    if (eventsToDisplay.length === 0) {
+        noResultsElement.textContent = '検索条件に合う企画が見つかりませんでした。';
+        noResultsElement.style.display = 'block';
+    } else {
+        noResultsElement.style.display = 'none';
+        eventsToDisplay.forEach(item => {
+            const row = document.createElement('tr');
+
+            // ★ここから、新しい列の表示順に合わせて<td>要素の作成と追加の順番を調整します★
+
+            // 企画名
+            const nameCell = document.createElement('td');
+            if (item.リンクURL && item.リンクURL.startsWith('http')) {
+                const link = document.createElement('a');
+                link.href = item.リンクURL;
+                link.textContent = item.企画名 || '';
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                nameCell.appendChild(link);
             } else {
-                noResultsElement.style.display = 'none';
-                eventsToDisplay.forEach(item => {
-                    const row = document.createElement('tr');
-
-                    // 企画名
-                    const nameCell = document.createElement('td');
-                    if (item.リンクURL && item.リンクURL.startsWith('http')) {
-                        const link = document.createElement('a');
-                        link.href = item.リンクURL;
-                        link.textContent = item.企画名 || '';
-                        link.target = '_blank';
-                        link.rel = 'noopener noreferrer';
-                        nameCell.appendChild(link);
-                    } else {
-                        nameCell.textContent = item.企画名 || '';
-                    }
-                    row.appendChild(nameCell);
-
-                    // 年のセル
-                    const yearCell = document.createElement('td');
-                    yearCell.textContent = item.年 || ''; 
-                    if (item.年) {
-                        yearCell.classList.add(`year-cell-${item.年}`); 
-                    }
-                    row.appendChild(yearCell);
-
-                    // 組
-                    const classCell = document.createElement('td');
-                    classCell.textContent = item.組 || '';
-                    row.appendChild(classCell);
-
-                    // 団体名
-                    const groupNameCell = document.createElement('td');
-                    groupNameCell.textContent = item.団体名 || '';
-                    row.appendChild(groupNameCell);
-
-                    // 場所(棟)
-                    const buildingCell = document.createElement('td');
-                    buildingCell.textContent = item['場所(棟)'] || '';
-                    row.appendChild(buildingCell);
-
-                    // 場所(階)
-                    const floorCell = document.createElement('td');
-                    floorCell.textContent = item['場所(階)'] || '';
-                    row.appendChild(floorCell);
-
-                    // 使用教室名
-                    const roomNameCell = document.createElement('td');
-                    roomNameCell.textContent = item.使用教室名 || '';
-                    row.appendChild(roomNameCell);
-
-                    // ジャンル
-                    const genreCell = document.createElement('td');
-                    genreCell.textContent = item.ジャンル || '';
-                    if (item.ジャンル) {
-                        genreCell.classList.add(`genre-${item.ジャンル}`); 
-                    }
-                    row.appendChild(genreCell);
-
-                    // 状況
-                    const statusCell = document.createElement('td');
-                    statusCell.classList.add('crowd-status-cell');
-                    let statusClass = '';
-                    switch (item.状況) {
-                        case '実施していない': statusClass = 'status-実施していない'; break;
-                        case '待ち時間なし': statusClass = 'status-待ち時間なし'; break;
-                        case '10分未満': statusClass = 'status-10分未満'; break;
-                        case '10分以上': statusClass = 'status-10分以上'; break;
-                        case '30分以上': statusClass = 'status-30分以上'; break;
-                        case '売り切れ・終了': statusClass = 'status-売り切れ・終了'; break; 
-                        default: statusClass = '';
-                    }
-                    statusCell.classList.add(statusClass);
-                    statusCell.textContent = item.状況 || '';
-                    row.appendChild(statusCell);
-
-                    // コメント列の追加
-                    const commentCell = document.createElement('td');
-                    commentCell.classList.add('comment-cell'); // スタイルを適用するためのクラス
-                    commentCell.textContent = item.コメント || ''; // スプレッドシートの「コメント」列のデータを表示
-                    row.appendChild(commentCell);
-
-                    tableBody.appendChild(row);
-                });
+                nameCell.textContent = item.企画名 || '';
             }
-        }
+            row.appendChild(nameCell);
+
+            // 状況
+            const statusCell = document.createElement('td');
+            statusCell.classList.add('crowd-status-cell');
+            let statusClass = '';
+            switch (item.状況) {
+                case '実施していない': statusClass = 'status-実施していない'; break;
+                case '待ち時間なし': statusClass = 'status-待ち時間なし'; break;
+                case '10分未満': statusClass = 'status-10分未満'; break;
+                case '10分以上': statusClass = 'status-10分以上'; break;
+                case '30分以上': statusClass = 'status-30分以上'; break;
+                case '売り切れ・終了': statusClass = 'status-売り切れ・終了'; break; 
+                default: statusClass = '';
+            }
+            statusCell.classList.add(statusClass);
+            statusCell.textContent = item.状況 || '';
+            row.appendChild(statusCell);
+
+            // コメント
+            const commentCell = document.createElement('td');
+            commentCell.classList.add('comment-cell');
+            commentCell.textContent = item.コメント || ''; 
+            row.appendChild(commentCell);
+
+            // 年
+            const yearCell = document.createElement('td');
+            yearCell.textContent = item.年 || ''; 
+            if (item.年) {
+                yearCell.classList.add(`year-cell-${item.年}`); 
+            }
+            row.appendChild(yearCell);
+
+            // 組
+            const classCell = document.createElement('td');
+            classCell.textContent = item.組 || '';
+            row.appendChild(classCell);
+
+            // 団体名
+            const groupNameCell = document.createElement('td');
+            groupNameCell.textContent = item.団体名 || '';
+            row.appendChild(groupNameCell);
+
+            // 場所(棟)
+            const buildingCell = document.createElement('td');
+            buildingCell.textContent = item['場所(棟)'] || '';
+            row.appendChild(buildingCell);
+
+            // 場所(階)
+            const floorCell = document.createElement('td');
+            floorCell.textContent = item['場所(階)'] || '';
+            row.appendChild(floorCell);
+
+            // 使用教室名
+            const roomNameCell = document.createElement('td');
+            roomNameCell.textContent = item.使用教室名 || '';
+            row.appendChild(roomNameCell);
+
+            // ジャンル
+            const genreCell = document.createElement('td');
+            genreCell.textContent = item.ジャンル || '';
+            if (item.ジャンル) {
+                genreCell.classList.add(`genre-${item.ジャンル}`); 
+            }
+            row.appendChild(genreCell);
+
+            // ★ここまで、新しい列の表示順に合わせて<td>要素の作成と追加の順番を調整します★
+
+            tableBody.appendChild(row);
+        });
+    }
+}
 
         // イベントリスナーの設定
         document.addEventListener('DOMContentLoaded', () => {
