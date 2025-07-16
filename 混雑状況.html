@@ -90,9 +90,8 @@
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    /* ★重要★ テーブルをスクロールさせるための設定 */
     overflow: auto; /* 横と縦のスクロールバーを必要に応じて表示 */
-    height: 70vh; /* ★任意★ テーブルの高さに上限を設定し、テーブル内でスクロールさせる */
+    height: 70vh; /* テーブルの高さに上限を設定し、テーブル内でスクロールさせる */
     -webkit-overflow-scrolling: touch;
 }
 .event-table {
@@ -100,21 +99,24 @@
     border-collapse: collapse;
     min-width: 1000px; /* 列が増えたので、必要に応じて最小幅を調整 */
 }
+
+/* ★ここを修正・調整★ 全てのセルにデフォルトで折り返しなし (nowrap) を設定 */
 .event-table th,
 .event-table td {
     padding: 10px 12px;
     text-align: left;
     border-bottom: 1px solid #eee;
     font-size: 0.9em;
-    white-space: nowrap; /* デフォルトは折り返さない */
+    white-space: nowrap; /* デフォルトは折り返しなし */
 }
 
-/* コメント列のスタイル（例：折り返す、幅を広げる） */
+/* コメント列のスタイル（折り返しあり） */
 .event-table td.comment-cell {
-    white-space: normal; /* コメントは折り返す */
+    white-space: pre-wrap; /* スプレッドシートの改行と自動折り返しを両方有効に */
     max-width: 250px; /* 必要に応じて最大幅を設定 */
     word-break: break-word; /* 長い単語も折り返す */
 }
+
 
 /* ★一番上のヘッダー行を固定する設定★ */
 .event-table th {
@@ -128,32 +130,23 @@
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.05);
 }
 
-.event-table th,
-.event-table td {
-    padding: 10px 12px;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9em;
-    white-space: pre-wrap; /* ★ここに変更★ */
-}
 /* ★企画名（最初の列）を固定する設定★ */
 .event-table th:first-child, /* ヘッダー行の最初のセル */
 .event-table td:first-child { /* 各行の最初のセル */
-    position: sticky;
-    left: 0;
-    z-index: 11;
-    background-color: #f6f9fc;
-    white-space: pre-wrap; /* ★追加または変更★ */
-    min-width: 150px; /* ★最小幅を設定 (任意)★ */
-    max-width: 250px; /* ★最大幅を設定 (任意)★ */
+    position: sticky; /* 固定する */
+    left: 0; /* 左端に固定 */
+    z-index: 11; /* 他のセルよりも手前に表示 */
+    background-color: #f6f9fc; /* 固定される列の背景色 (ヘッダーと異なる色でも良い) */
+    white-space: pre-wrap; /* ★企画名もスプレッドシートの改行と自動折り返しを両方有効に★ */
+    min-width: 150px; /* 最小幅を設定 (任意) */
+    max-width: 250px; /* 最大幅を設定 (任意) */
     word-break: break-word; /* 長い単語も折り返すようにする (任意) */
 }
-        
-        /* コメント列のスタイル（例：折り返す、幅を広げる） */
-.event-table td.comment-cell {
-    white-space: pre-wrap; /* ★ここに変更★ */
-    max-width: 250px; /* 必要に応じて最大幅を設定 */
-    word-break: break-word; /* 長い単語も折り返す */
+
+/* ★固定された最初のヘッダーセル（企画名のヘッダー）のスタイル★ */
+.event-table th:first-child {
+    z-index: 12; /* ★ここを最も高い値に設定 (重要:交差部分)★ */
+    background-color: #eef2f7; /* ヘッダーの背景色と同じにすると自然 */
 }
 
 
