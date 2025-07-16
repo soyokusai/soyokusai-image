@@ -134,20 +134,27 @@
     text-align: left;
     border-bottom: 1px solid #eee;
     font-size: 0.9em;
-    white-space: normal; /* ★normal に変更 (またはこの行を削除)★ */
+    white-space: pre-wrap; /* ★ここに変更★ */
 }
-/* 固定された最初のヘッダーセル（企画名のヘッダー）のスタイル */
-.event-table th:first-child {
-    z-index: 12; /* 交差する部分なので、最も手前に表示 (重要) */
-    background-color: #eef2f7; /* ヘッダーの背景色と同じにすると自然 */
+/* ★企画名（最初の列）を固定する設定★ */
+.event-table th:first-child, /* ヘッダー行の最初のセル */
+.event-table td:first-child { /* 各行の最初のセル */
+    position: sticky;
+    left: 0;
+    z-index: 11;
+    background-color: #f6f9fc;
+    white-space: pre-wrap; /* ★追加または変更★ */
+    min-width: 150px; /* ★最小幅を設定 (任意)★ */
+    max-width: 250px; /* ★最大幅を設定 (任意)★ */
+    word-break: break-word; /* 長い単語も折り返すようにする (任意) */
 }
-        }
+        
         /* コメント列のスタイル（例：折り返す、幅を広げる） */
-        .event-table td.comment-cell {
-            white-space: normal; /* コメントは折り返す */
-            max-width: 250px; /* 必要に応じて最大幅を設定 */
-            word-break: break-word; /* 長い単語も折り返す */
-        }
+.event-table td.comment-cell {
+    white-space: pre-wrap; /* ★ここに変更★ */
+    max-width: 250px; /* 必要に応じて最大幅を設定 */
+    word-break: break-word; /* 長い単語も折り返す */
+}
 
 
         .event-table th {
@@ -199,14 +206,6 @@
             color: #ffffff; /* デフォルトの文字色か、必要に応じて調整 */
             font-weight: bold; /* 必要であれば文字を太字に */
         }
-
-        /* ジャンルごとの文字色 */
-        .genre-飲食 { color: #8B4513; font-weight: bold; } /* 茶色 */
-        .genre-発表 { color: #800080; font-weight: bold; } /* 紫 */
-        .genre-展示 { color: #006400; font-weight: bold; } /* 濃い緑 */
-        .genre-体験 { color: #DAA520; font-weight: bold; } /* 金色 */
-        .genre-お化け屋敷 { color: #4B0082; font-weight: bold; } /* 濃い紫 */
-        /* その他のジャンルがあれば追加 */
 
 
         /* ローディングメッセージ */
