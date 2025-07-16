@@ -96,7 +96,7 @@
         .event-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 800px;
+            min-width: 800px; /* コメント列が追加されるので少し広げても良いかもしれません */
         }
         .event-table th,
         .event-table td {
@@ -104,8 +104,16 @@
             text-align: left;
             border-bottom: 1px solid #eee;
             font-size: 0.9em;
-            white-space: nowrap;
+            white-space: nowrap; /* コメント列は折り返すことも検討 */
         }
+        /* コメント列のスタイル（例：折り返す、幅を広げる） */
+        .event-table td.comment-cell {
+            white-space: normal; /* コメントは折り返す */
+            max-width: 250px; /* 必要に応じて最大幅を設定 */
+            word-break: break-word; /* 長い単語も折り返す */
+        }
+
+
         .event-table th {
             background-color: #eef2f7;
             color: #4a5568;
@@ -136,23 +144,23 @@
             font-size: 0.85em;
         }
         /* 新しい状況名に合わせて色を調整 */
-        .status-実施していない { background-color: #e0e0e0; color: #555; } /* グレー系 */
-        .status-待ち時間なし { background-color: #d4edda; color: #155724; } /* 緑系 (空いています) */
-        .status-10分未満 { background-color: #ffeeba; color: #856404; } /* 黄色系 (やや混雑) */
-        .status-10分以上 { background-color: #f8d7da; color: #721c24; } /* 赤系 (混雑) */
-        .status-30分以上 { background-color: #d6b0da; color: #6a1a77; } /* 紫系 (超混雑) */
-        .status-売り切れ・終了 { background-color: #cce5ff; color: #004085; } /* 青系 (売り切れ・終了) */
+        .status-実施していない { background-color: #c8c8cb; color: #000000; } /* グレー系 */
+        .status-待ち時間なし { background-color: #cbf266; color: #000000; } /* 緑系 (空いています) */
+        .status-10分未満 { background-color: #ffeeba; color: #ffffff; } /* 黄色系 (やや混雑) */
+        .status-10分以上 { background-color: #ff9900; color: #ffffff; } /* 赤系 (混雑) */
+        .status-30分以上 { background-color: #9a0079; color: #ffffff; } /* 紫系 (超混雑) */
+        .status-売り切れ・終了 { background-color: #ff2800; color: #ffffff; } /* 青系 (売り切れ・終了) */
 
 
         /* 学年のセルごとの背景色 */
-        .year-cell-1 { background-color: #f0f8ff; } /* 1年生：水色系 */
-        .year-cell-2 { background-color: #fff0f5; } /* 2年生：ピンク系 */
-        .year-cell-3 { background-color: #f5fffa; } /* 3年生：ミントグリーン系 */
+        .year-cell-1 { background-color: #ff2800; } /* 1年生：水色系 */
+        .year-cell-2 { background-color: #35a16b; } /* 2年生：ピンク系 */
+        .year-cell-3 { background-color: #0041ff; } /* 3年生：ミントグリーン系 */
         /* 必要に応じて他の学年の色も追加 */
 
         /* 文字色が見にくい場合は調整 */
         .year-cell-1, .year-cell-2, .year-cell-3 {
-            color: #333; /* デフォルトの文字色か、必要に応じて調整 */
+            color: #ffffff; /* デフォルトの文字色か、必要に応じて調整 */
             font-weight: bold; /* 必要であれば文字を太字に */
         }
 
@@ -273,7 +281,7 @@
                     <th>使用教室名</th>
                     <th>ジャンル</th>
                     <th>状況</th>
-                </tr>
+                    <th>コメント</th> </tr>
             </thead>
             <tbody>
                 </tbody>
@@ -305,7 +313,6 @@
 
             tableBody.innerHTML = ''; 
             noResultsElement.style.display = 'none'; 
-            // lastUpdateTimeElement.textContent = '--/-- --:--'; // 自動更新時に毎回リセットしない
 
             try {
                 loadingElement.style.display = 'block'; 
@@ -416,14 +423,12 @@
         // フィルターのオプションを生成する汎用関数
         function populateFilter(filterId, uniqueValuesSet, suffix = '') {
             const filterElement = document.getElementById(filterId);
-            // ドロップダウンの場合のみ既存の"すべて"以外をクリア
             if (filterElement.tagName === 'SELECT') {
                 Array.from(filterElement.options).forEach((option, index) => {
                     if (index > 0) option.remove();
                 });
             }
 
-            // チェックボックスの場合はこの関数ではオプションを生成しない
             if (filterElement.type === 'checkbox' || filterId === 'statusCheckboxes') return; 
 
             const valuesArray = Array.from(uniqueValuesSet).filter(Boolean);
@@ -454,35 +459,24 @@
             const roomNameFilter = document.getElementById('roomNameFilter').value;
             const genreFilter = document.getElementById('genreFilter').value;
             
-            // 状況フィルター (チェックボックス対応)
             const statusCheckboxes = document.querySelectorAll('input[name="status"]:checked');
             const selectedStatuses = Array.from(statusCheckboxes).map(checkbox => checkbox.value);
             
             const filteredEvents = allEventsData.filter(item => {
-                // 企画名フィルター
                 if (eventNameFilter && !(item.企画名 && item.企画名.toLowerCase().includes(eventNameFilter))) return false;
-                // 年フィルター
                 if (yearFilter && !(item.年 && item.年 == yearFilter)) return false;
-                // 組フィルター
                 if (classFilter && !(item.組 && item.組 == classFilter)) return false;
-                // 団体名フィルター
                 if (groupNameFilter && !(item.団体名 && item.団体名.toLowerCase().includes(groupNameFilter))) return false;
-                // 場所(棟)フィルター
                 if (buildingFilter && !(item['場所(棟)'] && item['場所(棟)'] == buildingFilter)) return false;
-                // 場所(階)フィルター
                 if (floorFilter && !(item['場所(階)'] && item['場所(階)'] == floorFilter)) return false;
-                // 使用教室名フィルター
                 if (roomNameFilter && !(item.使用教室名 && item.使用教室名 == roomNameFilter)) return false;
-                // ジャンルフィルター
                 if (genreFilter && !(item.ジャンル && item.ジャンル == genreFilter)) return false;
                 
-                // 状況フィルター (チェックボックス対応)
                 if (selectedStatuses.length > 0) { 
                     if (!selectedStatuses.includes(item.状況)) {
                         return false;
                     }
                 } else {
-                    // 何もチェックされていない場合は、すべての状況を表示しない（完全に非表示にする）
                     return false; 
                 }
                 
@@ -553,7 +547,7 @@
                     roomNameCell.textContent = item.使用教室名 || '';
                     row.appendChild(roomNameCell);
 
-                    // ジャンル (ジャンルのセルの色付けを残す場合はそのまま)
+                    // ジャンル
                     const genreCell = document.createElement('td');
                     genreCell.textContent = item.ジャンル || '';
                     if (item.ジャンル) {
@@ -571,12 +565,18 @@
                         case '10分未満': statusClass = 'status-10分未満'; break;
                         case '10分以上': statusClass = 'status-10分以上'; break;
                         case '30分以上': statusClass = 'status-30分以上'; break;
-                        case '売り切れ・終了': statusClass = 'status-売り切れ・終了'; break; // ここを修正
+                        case '売り切れ・終了': statusClass = 'status-売り切れ・終了'; break; 
                         default: statusClass = '';
                     }
                     statusCell.classList.add(statusClass);
                     statusCell.textContent = item.状況 || '';
                     row.appendChild(statusCell);
+
+                    // コメント列の追加
+                    const commentCell = document.createElement('td');
+                    commentCell.classList.add('comment-cell'); // スタイルを適用するためのクラス
+                    commentCell.textContent = item.コメント || ''; // スプレッドシートの「コメント」列のデータを表示
+                    row.appendChild(commentCell);
 
                     tableBody.appendChild(row);
                 });
@@ -594,13 +594,11 @@
             document.getElementById('roomNameFilter').addEventListener('change', applyFilters);
             document.getElementById('genreFilter').addEventListener('change', applyFilters);
             
-            // 状況チェックボックスグループにイベントリスナーを登録
             document.getElementById('statusCheckboxes').addEventListener('change', applyFilters); 
             
             fetchCrowdStatus();
 
             // 5分ごとに自動更新
-            // フィルターの状態を維持するために、fetchCrowdStatusを呼び出す
             setInterval(fetchCrowdStatus, 5 * 60 * 1000); 
         });
     </script>
