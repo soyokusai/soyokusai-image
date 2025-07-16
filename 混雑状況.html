@@ -83,28 +83,65 @@
 
 
         /* テーブルコンテナ */
-        .event-table-container {
-            max-width: 960px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        .event-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px; /* コメント列が追加されるので少し広げても良いかもしれません */
-        }
-        .event-table th,
-        .event-table td {
-            padding: 10px 12px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-            font-size: 0.9em;
-            white-space: nowrap; /* コメント列は折り返すことも検討 */
+.event-table-container {
+    max-width: 960px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* ★重要★ テーブルをスクロールさせるための設定 */
+    overflow: auto; /* 横と縦のスクロールバーを必要に応じて表示 */
+    height: 70vh; /* ★任意★ テーブルの高さに上限を設定し、テーブル内でスクロールさせる */
+    -webkit-overflow-scrolling: touch;
+}
+.event-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px; /* 列が増えたので、必要に応じて最小幅を調整 */
+}
+.event-table th,
+.event-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9em;
+    white-space: nowrap; /* デフォルトは折り返さない */
+}
+
+/* コメント列のスタイル（例：折り返す、幅を広げる） */
+.event-table td.comment-cell {
+    white-space: normal; /* コメントは折り返す */
+    max-width: 250px; /* 必要に応じて最大幅を設定 */
+    word-break: break-word; /* 長い単語も折り返す */
+}
+
+/* ★一番上のヘッダー行を固定する設定★ */
+.event-table th {
+    background-color: #eef2f7; /* ヘッダーの背景色を明確に設定 */
+    color: #4a5568;
+    font-weight: bold;
+    text-transform: uppercase;
+    position: sticky; /* 固定する */
+    top: 0; /* 上端に固定 */
+    z-index: 10; /* 他の要素より手前に表示 (重要) */
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* ★企画名（最初の列）を固定する設定★ */
+.event-table th:first-child, /* ヘッダー行の最初のセル */
+.event-table td:first-child { /* 各行の最初のセル */
+    position: sticky; /* 固定する */
+    left: 0; /* 左端に固定 */
+    z-index: 11; /* ヘッダーよりも手前に表示 (重要:交差部分) */
+    background-color: #f6f9fc; /* 固定される列の背景色 (ヘッダーと異なる色でも良い) */
+}
+
+/* 固定された最初のヘッダーセル（企画名のヘッダー）のスタイル */
+.event-table th:first-child {
+    z-index: 12; /* 交差する部分なので、最も手前に表示 (重要) */
+    background-color: #eef2f7; /* ヘッダーの背景色と同じにすると自然 */
+}
         }
         /* コメント列のスタイル（例：折り返す、幅を広げる） */
         .event-table td.comment-cell {
