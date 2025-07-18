@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文化祭 企画別混雑状況一覧</title>
+    <title>文化祭 企画状況一覧</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Noto Sans JP', sans-serif;
             margin: 0;
-            padding: 20px; /* 全体のパディングを設ける */
+            padding: 20px;
             background-color: #2c3e50; /* 暗めの背景色 */
             color: #ecf0f1; /* 明るい文字色 */
             line-height: 1.6;
@@ -30,7 +30,7 @@
         }
 
         #app-header h1 {
-            font-size: 3.5em; /* タイトルを大きく */
+            font-size: 3.5em;
             color: #f1c40f;
             margin: 0;
             padding: 0;
@@ -41,7 +41,7 @@
             position: absolute;
             bottom: 15px;
             right: 0;
-            font-size: 1.1em; /* 少し小さめに */
+            font-size: 1.1em;
             color: #bdc3c7;
             background-color: rgba(0, 0, 0, 0.3);
             padding: 8px 15px;
@@ -52,24 +52,23 @@
             width: 100%;
             max-width: 1600px;
             display: grid;
-            /* 基本的に3列表示 */
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
-            gap: 25px; /* グリッド間の間隔 */
-            padding-bottom: 50px; /* 最下部に更新時刻が重ならないように */
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* 基本3列 */
+            gap: 25px;
+            padding-bottom: 50px;
         }
 
         .building-section {
-            background-color: #34495e; /* 棟セクションの背景色 */
+            background-color: #34495e;
             border-radius: 15px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
             padding: 25px;
-            overflow: hidden; /* 角丸からはみ出さないように */
+            overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
         .building-section h2 {
-            font-size: 2.5em; /* 棟名を大きく */
+            font-size: 2.5em;
             color: #ecf0f1;
             margin-top: 0;
             margin-bottom: 20px;
@@ -84,8 +83,8 @@
         }
 
         .floor-section h3 {
-            font-size: 1.8em; /* 階名を大きく */
-            color: #9b59b6; /* 階の強調色 */
+            font-size: 1.8em;
+            color: #9b59b6;
             margin-top: 0;
             margin-bottom: 15px;
             padding-left: 10px;
@@ -99,21 +98,15 @@
         }
 
         .event-item {
-            background-color: #4a627a; /* 各イベントカードの背景色 */
+            background-color: #4a627a;
             border-radius: 10px;
             padding: 18px;
             margin-bottom: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .event-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
         }
 
         .event-title {
-            font-size: 1.6em; /* 企画名を大きく */
+            font-size: 1.6em;
             font-weight: 700;
             color: #f1c40f;
             margin-bottom: 8px;
@@ -121,7 +114,7 @@
         }
 
         .event-status {
-            font-size: 1.3em; /* 状況表示を大きく */
+            font-size: 1.3em;
             font-weight: 700;
             padding: 8px 15px;
             border-radius: 8px;
@@ -130,18 +123,18 @@
         }
 
         /* 混雑状況ごとの色 */
-        .status-実施していない { background-color: #95a5a6; color: #fdfdfd; } /* グレー */
-        .status-待ち時間なし { background-color: #27ae60; color: #fdfdfd; } /* 緑 */
-        .status-10分未満 { background-color: #f39c12; color: #fdfdfd; } /* オレンジ */
-        .status-10分以上 { background-color: #e74c3c; color: #fdfdfd; } /* 赤 */
-        .status-30分以上 { background-color: #8e44ad; color: #fdfdfd; } /* 紫 */
-        .status-売り切れ・終了 { background-color: #3498db; color: #fdfdfd; } /* 青 */
+        .status-実施していない { background-color: #95a5a6; color: #fdfdfd; }
+        .status-待ち時間なし { background-color: #27ae60; color: #fdfdfd; }
+        .status-10分未満 { background-color: #f39c12; color: #fdfdfd; }
+        .status-10分以上 { background-color: #e74c3c; color: #fdfdfd; }
+        .status-30分以上 { background-color: #8e44ad; color: #fdfdfd; }
+        .status-売り切れ・終了 { background-color: #3498db; color: #fdfdfd; }
 
         .event-comment {
             font-size: 1.1em;
             color: #bdc3c7;
             margin-bottom: 10px;
-            white-space: pre-wrap; /* 改行を保持 */
+            white-space: pre-wrap;
         }
 
         .event-details {
@@ -149,8 +142,8 @@
             color: #b0b4b8;
         }
         .event-details span {
-            margin-right: 0.8em; /* 各詳細情報の間にスペース */
-            white-space: nowrap; /* 詳細情報は改行しない */
+            margin-right: 0.8em;
+            white-space: nowrap;
         }
 
         #loading {
@@ -168,10 +161,9 @@
             z-index: 9999;
         }
 
-        /* レスポンシブ対応 */
-        /* PC (一般的なデスクトップ) およびプロジェクター向け */
+        /* レスポンシブ対応 (PC向けに特化しつつ、ウィンドウ幅の変化に対応) */
         @media (min-width: 1601px) {
-            body { font-size: 18px; } /* 基本フォントサイズを少し上げる */
+            body { font-size: 18px; }
             #app-header h1 { font-size: 4em; }
             .building-section h2 { font-size: 2.8em; }
             .floor-section h3 { font-size: 2.2em; }
@@ -181,7 +173,6 @@
             .event-details { font-size: 1.05em; }
         }
 
-        /* 標準的なノートPCや大きめのタブレット横向き */
         @media (max-width: 1600px) {
             body { font-size: 16px; }
             #app-header h1 { font-size: 3.5em; }
@@ -193,11 +184,10 @@
             .event-details { font-size: 0.95em; }
         }
 
-        /* 中程度の画面幅 (例: 狭めのノートPC、大きめタブレット縦向き) */
         @media (max-width: 1200px) {
             body { padding: 15px; }
             #main-content {
-                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* 2列表示に近づける */
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
                 gap: 20px;
             }
             #app-header h1 { font-size: 2.8em; }
@@ -211,13 +201,13 @@
             .event-details { font-size: 0.9em; }
         }
 
-        /* 小さい画面幅 (例: 小さめタブレット縦向き、またはPCでウィンドウを非常に狭くした場合) */
+        /* 最も狭いPCウィンドウ幅での表示（タブレット縦向きなども含む） */
         @media (max-width: 768px) {
             body { padding: 10px; }
             #app-header { margin-bottom: 15px; }
             #app-header h1 { font-size: 2.2em; }
             .last-update-time {
-                position: static; /* 固定位置をやめる */
+                position: static;
                 margin-top: 10px;
                 text-align: right;
                 font-size: 0.85em;
@@ -245,7 +235,7 @@
     <div id="loading">情報を読み込み中...</div>
 
     <header id="app-header">
-        <h1>文化祭 企画別混雑状況一覧</h1>
+        <h1>文化祭 企画状況一覧</h1>
         <div class="last-update-time">最終更新: <span id="lastUpdateTime">--/-- --:--</span></div>
     </header>
 
@@ -253,19 +243,15 @@
         </main>
 
     <script>
-        // Google Apps ScriptのウェブアプリURL
+        // ★★★ ここにあなたのGoogle Apps Script ウェブアプリのURLを貼り付けてください ★★★
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwOm38pj-RhWN8VMVMM6vNW1t9mOoRkxNRKn7EanYyk7CqHBMngQZv7fUbskjCtgpzwLw/exec'; 
 
         const fetchInterval = 60 * 1000; // データ更新間隔 (1分)
-        let dataFetchInterval; // データ取得用インターバル
 
-        // データの取得と表示を開始
-        async function startDisplay() {
-            await fetchAndRenderList(); // 最初のデータ取得と表示
-            
-            // データ取得を定期的に行う
-            dataFetchInterval = setInterval(fetchAndRenderList, fetchInterval);
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAndRenderList(); // 最初のデータ取得と表示
+            setInterval(fetchAndRenderList, fetchInterval); // 定期的なデータ更新
+        });
 
         async function fetchAndRenderList() {
             const loadingElement = document.getElementById('loading');
@@ -277,120 +263,122 @@
             try {
                 const response = await fetch(GAS_WEB_APP_URL);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTPエラー: ${response.status}`);
                 }
                 const fetchedData = await response.json();
 
-                // 企画名があるものをフィルタリング
                 const filteredEvents = fetchedData.filter(item => 
                     item.企画名 && item.企画名.trim() !== ''
                 );
                 
                 if (filteredEvents.length === 0) {
                     mainContent.innerHTML = '<div style="text-align: center; font-size: 1.5em; color: #bdc3c7; padding: 50px;">現在、表示可能な企画はありません。</div>';
-                    loadingElement.style.display = 'none';
                     return;
                 }
 
-                // 最終更新日時を計算して表示
-                let latestUpdateTime = null;
-                fetchedData.forEach(item => { // 全てのデータから最終更新日時を探す
-                    const itemUpdateTime = item.更新 || item.更新時刻;
-                    if (itemUpdateTime) {
-                        const currentItemDate = new Date(itemUpdateTime);
-                        if (!latestUpdateTime || currentItemDate > latestUpdateTime) {
-                            latestUpdateTime = currentItemDate;
-                        }
-                    }
-                });
-
-                if (latestUpdateTime) {
-                    lastUpdateTimeElement.textContent = latestUpdateTime.toLocaleString('ja-JP', { 
-                        year: 'numeric', month: '2-digit', day: '2-digit', 
-                        hour: '2-digit', minute: '2-digit' 
-                    });
-                }
-
-                // データを棟と階でグループ化
-                const groupedEvents = groupEventsByBuildingAndFloor(filteredEvents);
+                updateLastUpdateTime(fetchedData);
                 
-                // HTMLを生成して表示
+                const groupedEvents = groupEventsByBuildingAndFloor(filteredEvents);
                 renderEventList(groupedEvents, mainContent);
 
             } catch (error) {
-                console.error('データ取得に失敗しました:', error);
-                mainContent.innerHTML = '<div style="text-align: center; font-size: 1.5em; color: #e74c3c; padding: 50px;">データの読み込み中にエラーが発生しました。時間を置いてから再度お試しください。</div>';
+                console.error('データ取得エラー:', error);
+                mainContent.innerHTML = '<div style="text-align: center; font-size: 1.5em; color: #e74c3c; padding: 50px;">データを読み込めませんでした。GASのURLを確認するか、時間を置いてから再度お試しください。</div>';
             } finally {
                 loadingElement.style.display = 'none';
             }
         }
 
+        function updateLastUpdateTime(data) {
+            let latestUpdateTime = null;
+            data.forEach(item => {
+                const itemUpdateTime = item.更新 || item.更新時刻;
+                if (itemUpdateTime) {
+                    const currentItemDate = new Date(itemUpdateTime);
+                    if (!latestUpdateTime || currentItemDate > latestUpdateTime) {
+                        latestUpdateTime = currentItemDate;
+                    }
+                }
+            });
+
+            if (latestUpdateTime) {
+                document.getElementById('lastUpdateTime').textContent = latestUpdateTime.toLocaleString('ja-JP', { 
+                    year: 'numeric', month: '2-digit', day: '2-digit', 
+                    hour: '2-digit', minute: '2-digit' 
+                });
+            }
+        }
+
+        // 特殊な場所名を定義
+        const specialLocations = ['AB棟間', 'BC棟間', 'プール周辺', '屋外'];
+
         function groupEventsByBuildingAndFloor(events) {
             const grouped = {};
 
             events.forEach(event => {
-                let building = event['場所(棟)'];
-                let floor = event['場所(階)'];
+                let buildingName = '';
+                let floorName = '';
+                const usedRoomName = event.使用教室名 ? event.使用教室名.trim() : '';
+                const buildingFromData = event['場所(棟)'] ? event['場所(棟)'].trim() : '';
+                const floorFromData = event['場所(階)'] ? event['場所(階)'].trim() : '';
 
-                // 「場所(棟)」の処理
-                if (!building || building.trim() === '') {
-                    // 棟が空の場合、階の情報に基づいて特殊な棟に分類
-                    if (floor === 'AB棟間') {
-                        building = 'AB棟間';
-                        floor = ''; // 階は表示しない
-                    } else if (floor === 'BC棟間') {
-                        building = 'BC棟間';
-                        floor = '';
-                    } else if (floor === 'プール周辺') {
-                        building = 'プール周辺';
-                        floor = '';
-                    } else if (floor === '屋外') { // 棟が空で階が屋外の場合
-                        building = '屋外';
-                        floor = '';
-                    } else { // 棟も階も不明な場合
-                        building = 'その他';
-                        floor = ''; // 階は表示しない
-                    }
-                } else if (building === '屋外') { // 棟が「屋外」と明記されている場合
-                    building = '屋外';
-                    floor = ''; // 屋外の場合は階を表示しない
+                // 優先順位1: 使用教室名が特殊な場所の場合
+                if (specialLocations.includes(usedRoomName)) {
+                    buildingName = usedRoomName;
+                    floorName = ''; // 特殊な場所には階がないとみなす
+                } 
+                // 優先順位2: 場所(棟)が屋外の場合
+                else if (buildingFromData === '屋外') {
+                    buildingName = '屋外';
+                    floorName = ''; // 屋外には階がないとみなす
                 }
-
-                // 階が空または不明の場合は空文字列に変換
-                if (!floor || floor.trim() === '' || floor === '不明') {
-                    floor = '';
+                // 優先順位3: 通常の棟・階の組み合わせ
+                else if (buildingFromData !== '') {
+                    buildingName = buildingFromData;
+                    floorName = floorFromData;
+                }
+                // それ以外（棟も教室名も空で特殊な場所ではない場合）
+                else {
+                    buildingName = 'その他';
+                    floorName = '';
                 }
 
-                if (!grouped[building]) {
-                    grouped[building] = {};
+                // 階が空または「不明」の場合は空文字列に統一
+                if (!floorName || floorName === '不明') {
+                    floorName = '';
                 }
-                if (!grouped[building][floor]) {
-                    grouped[building][floor] = [];
+
+                if (!grouped[buildingName]) {
+                    grouped[buildingName] = {};
                 }
-                grouped[building][floor].push(event);
+                if (!grouped[buildingName][floorName]) {
+                    grouped[buildingName][floorName] = [];
+                }
+                grouped[buildingName][floorName].push(event);
             });
 
-            // 棟の順序をソート
+            // 棟の表示順を定義 (優先順位の高い順)
+            const customBuildingOrder = [
+                '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', // 通常の棟の数字・アルファベット順
+                ...specialLocations, // 特殊な場所をここに含める
+                'その他' // 「その他」は常に最後に
+            ];
+
             const sortedBuildingKeys = Object.keys(grouped).sort((a, b) => {
-                // 特定の場所を最後に表示
-                const customOrderLast = ['屋外', 'AB棟間', 'BC棟間', 'プール周辺', 'その他'];
-                const indexA = customOrderLast.indexOf(a);
-                const indexB = customOrderLast.indexOf(b);
+                const indexA = customBuildingOrder.indexOf(a);
+                const indexB = customBuildingOrder.indexOf(b);
 
-                if (indexA !== -1 && indexB !== -1) {
-                    return indexA - indexB;
+                // customBuildingOrderにない場合は文字列としてソート
+                if (indexA === -1 && indexB === -1) {
+                    return a.localeCompare(b);
                 }
-                if (indexA !== -1) return 1; // aが特殊な場所なら最後に
-                if (indexB !== -1) return -1; // bが特殊な場所なら最後に
-
-                // 数値の棟を優先（例: 1棟, 2棟）
-                const numA = parseInt(a);
-                const numB = parseInt(b);
-                if (!isNaN(numA) && !isNaN(numB)) {
-                    return numA - numB;
-                }
-                return a.localeCompare(b); // それ以外は文字列でソート
+                // customBuildingOrderにあるものを優先
+                if (indexA !== -1 && indexB === -1) return -1;
+                if (indexA === -1 && indexB !== -1) return 1;
+                // 両方customBuildingOrderにあればその順序
+                return indexA - indexB;
             });
+
 
             const finalGrouped = {};
             sortedBuildingKeys.forEach(buildingKey => {
@@ -417,87 +405,102 @@
         function renderEventList(groupedEvents, containerElement) {
             containerElement.innerHTML = ''; // 既存の内容をクリア
 
-            for (const building in groupedEvents) {
+            for (const buildingKey in groupedEvents) {
                 const buildingSection = document.createElement('section');
                 buildingSection.classList.add('building-section');
                 
-                // 棟名の表示を調整
-                let buildingNameDisplay = building;
-                if (building !== '屋外' && building !== 'AB棟間' && building !== 'BC棟間' && building !== 'プール周辺' && building !== 'その他') {
-                    buildingNameDisplay += '棟';
+                // 棟名表示の調整
+                let displayBuildingName = buildingKey;
+                if (!specialLocations.includes(buildingKey) && buildingKey !== 'その他') {
+                    displayBuildingName += '棟';
                 }
-                buildingSection.innerHTML = `<h2>${buildingNameDisplay}</h2>`;
+                buildingSection.innerHTML = `<h2>${displayBuildingName}</h2>`;
 
-                for (const floor in groupedEvents[building]) {
+                for (const floorKey in groupedEvents[buildingKey]) {
                     const floorSection = document.createElement('div');
                     floorSection.classList.add('floor-section');
                     
-                    // 階名の表示を調整
-                    let floorNameDisplay = floor;
-                    if (floor !== '') { // 階が空でない場合のみ表示
-                        floorNameDisplay += '階';
-                    }
-                    if (floorNameDisplay !== '') { // 階名がある場合のみh3を追加
-                         floorSection.innerHTML = `<h3>${floorNameDisplay}</h3>`;
+                    // 階名表示の調整（空でなければ「階」を追加）
+                    if (floorKey !== '') {
+                         floorSection.innerHTML = `<h3>${floorKey}階</h3>`;
                     }
                    
-
                     const eventList = document.createElement('ul');
                     eventList.classList.add('event-list');
 
-                    groupedEvents[building][floor].forEach(item => {
+                    groupedEvents[buildingKey][floorKey].forEach(item => {
                         const eventItem = document.createElement('li');
                         eventItem.classList.add('event-item');
 
-                        // 場所詳細情報の結合ロジック
-                        const buildingPart = (item['場所(棟)'] && item['場所(棟)'] !== '屋外') ? `${item['場所(棟)']}棟` : '';
-                        const floorPart = (item['場所(階)'] && item['場所(階)'] !== 'AB棟間' && item['場所(階)'] !== 'BC棟間' && item['場所(階)'] !== 'プール周辺') ? `${item['場所(階)']}階` : '';
+                        // 詳細情報の場所表示ロジック
+                        const year = item.年 ? `${item.年}年` : '';
+                        const klass = item.組 ? `${item.組}組` : '';
+                        const groupName = item.団体名 || '';
+                        const genre = item.ジャンル || '';
                         
-                        // 使用教室名を優先し、教室名がない場合は棟・階（屋外や特殊な場所でなければ）
-                        let locationTextParts = [];
-                        if (item.使用教室名 && item.使用教室名.trim() !== '') {
-                            locationTextParts.push(item.使用教室名);
-                        } else if (building === '屋外' || building === 'AB棟間' || building === 'BC棟間' || building === 'プール周辺' || building === 'その他') {
-                             // 棟名がすでに特殊な場所として表示されている場合、重複を避ける
-                             // ただし、データに特別な場所名がある場合は表示
-                             if (item['場所(棟)'] === '屋外' || item['場所(階)'] === 'AB棟間' || item['場所(階)'] === 'BC棟間' || item['場所(階)'] === 'プール周辺') {
-                                locationTextParts.push(item['場所(棟)'] || item['場所(階)']);
-                             } else if (building === 'その他') {
-                                //「その他」に分類された企画の元の棟・階情報がもしあれば表示
-                                 if (buildingPart) locationTextParts.push(buildingPart);
-                                 if (floorPart) locationTextParts.push(floorPart);
-                             }
-                        } else {
-                            if (buildingPart) locationTextParts.push(buildingPart);
-                            if (floorPart) locationTextParts.push(floorPart);
-                        }
-                        
-                        const locationDisplay = locationTextParts.filter(Boolean).join(' ');
+                        let locationText = '';
+                        const usedRoomName = item.使用教室名 ? item.使用教室名.trim() : '';
+                        const buildingFromData = item['場所(棟)'] ? item['場所(棟)'].trim() : '';
+                        const floorFromData = item['場所(階)'] ? item['場所(階)'].trim() : '';
 
+                        // 「使用教室名」が特殊な場所名として使われている場合は、それを直接表示
+                        if (specialLocations.includes(usedRoomName)) {
+                            locationText = usedRoomName;
+                        }
+                        // それ以外で、使用教室名があればそれを表示
+                        else if (usedRoomName !== '') {
+                            locationText = usedRoomName;
+                        }
+                        // 使用教室名がなく、場所(棟)と場所(階)から構成する場合
+                        else {
+                            const parts = [];
+                            if (buildingFromData !== '') {
+                                // 屋外でない棟は「棟」をつける
+                                if (buildingFromData === '屋外') {
+                                    parts.push('屋外');
+                                } else {
+                                    parts.push(`${buildingFromData}棟`);
+                                }
+                            }
+                            if (floorFromData !== '') {
+                                // 階が特殊な場所名でない場合のみ「階」をつける
+                                if (!specialLocations.includes(floorFromData)) {
+                                    parts.push(`${floorFromData}階`);
+                                }
+                            }
+                            locationText = parts.join(' ');
+                        }
 
                         eventItem.innerHTML = `
                             <div class="event-title">${item.企画名 || '企画名なし'}</div>
                             <div class="event-status ${getStatusClass(item.状況)}">${item.状況 || '不明'}</div>
                             ${item.コメント ? `<div class="event-comment">${item.コメント}</div>` : ''}
                             <div class="event-details">
-                                <span>${item.年 || ''}${item.年 ? '年' : ''}</span>
-                                <span>${item.組 || ''}${item.組 ? '組' : ''}</span>
-                                <span>${item.団体名 || ''}</span>
-                                <span>${locationDisplay}</span>
-                                <span>${item.ジャンル || ''}</span>
+                                <span>${year}</span>
+                                <span>${klass}</span>
+                                <span>${groupName}</span>
+                                <span>${locationText}</span>
+                                <span>${genre}</span>
                             </div>
                         `;
                         eventList.appendChild(eventItem);
                     });
-                    floorSection.appendChild(eventList);
-                    buildingSection.appendChild(floorSection);
+                    
+                    // 企画が一つもなければ階のセクションは追加しない
+                    if (eventList.children.length > 0) {
+                        floorSection.appendChild(eventList);
+                        buildingSection.appendChild(floorSection);
+                    }
                 }
-                containerElement.appendChild(buildingSection);
+                // 企画が一つもなければ棟のセクションも追加しない
+                // このチェックはJavaScriptのロジック上、常に true になるはずだが念のため
+                if (buildingSection.querySelector('.event-item')) {
+                     containerElement.appendChild(buildingSection);
+                }
             }
         }
 
-
-        // 状況に応じたCSSクラスを返すヘルパー関数 (既存のCSSクラス名と一致)
+        // 状況に応じたCSSクラスを返すヘルパー関数
         function getStatusClass(status) {
             switch (status) {
                 case '実施していない': return 'status-実施していない';
@@ -509,8 +512,6 @@
                 default: return '';
             }
         }
-
-        document.addEventListener('DOMContentLoaded', startDisplay);
     </script>
 </body>
 </html>
