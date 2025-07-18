@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文化祭 企画別混雑状況スライドショー</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* スクロールバーを非表示 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* 画面全体に広がるように */
+            background-color: #2c3e50; /* 暗めの背景色 */
+            color: #ecf0f1; /* 明るい文字色 */
+            transition: background-color 0.5s ease-in-out; /* 背景色切り替え時のアニメーション */
+        }
+
+        .slide-container {
+            width: 90%;
+            max-width: 1000px; /* プロジェクター表示に合わせる */
+            background-color: rgba(44, 62, 80, 0.9); /* 半透明のカード背景 */
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            padding: 40px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 500px; /* ある程度の高さを確保 */
+            box-sizing: border-box;
+            transition: opacity 0.8s ease-in-out; /* スライド切り替え時のフェードアニメーション */
+            opacity: 0; /* 最初は非表示 */
+        }
+        
+        .slide-container.active {
+            opacity: 1; /* 表示時は完全に表示 */
+        }
+
+        .slide-title {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #f1c40f; /* 企画名の強調色 */
+            line-height: 1.2;
+        }
+
+        .slide-status {
+            font-size: 2.5em;
+            font-weight: 700;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            display: inline-block; /* 状況セルを囲む */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+
+        /* 混雑状況ごとの色（調整済み） */
+        .status-実施していない { background-color: #95a5a6; color: #fdfdfd; } /* グレー */
+        .status-待ち時間なし { background-color: #27ae60; color: #fdfdfd; } /* 緑 */
+        .status-10分未満 { background-color: #f39c12; color: #fdfdfd; } /* オレンジ */
+        .status-10分以上 { background-color: #e74c3c; color: #fdfdfd; } /* 赤 */
+        .status-30分以上 { background-color: #8e44ad; color: #fdfdfd; } /* 紫 */
+        .status-売り切れ・終了 { background-color: #3498db; color: #fdfdfd; } /* 青 */
+
+        .slide-comment {
+            font-size: 1.6em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            white-space: pre-wrap; /* 改行を保持 */
+            max-width: 80%; /* コメントの最大幅 */
+            margin-left: auto;
+            margin-right: auto;
+            color: #bdc3c7; /* コメントの文字色 */
+        }
+
+        .slide-details {
+            font-size: 1.2em;
+            color: #b0b4b8;
+        }
+        .slide-details span {
+            margin: 0 10px;
+        }
+        .slide-details strong {
+            color: #ecf0f1;
+        }
+
+        .last-update-time {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 1.1em;
+            color: #bdc3c7;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 10px 15px;
+            border-radius: 10px;
+        }
+
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">情報を読み込み中...</div>
+
+    <div id="slideshow-container">
+        </div>
+
+    <div class="last-update-time">最終更新: <span id="lastUpdateTime">--/-- --:--</span></div>
+
+    <script>
+        // ★★★ここにデプロイしたGASのウェブアプリURLを貼り付けてください★★★
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwOm38pj-RhWN8VMvMM6vNW1t9mOoRkxNRKn7EanYyk7CqHBMngQZv7fUbskjCtgpzwLw/exec'; 
+
+        let allEventsData = [];
+        let currentSlideIndex = 0;
+        const slideChangeDelay = 8000; // 各スライドの表示時間 (8秒)
+        const fetchInterval = 5 * 60 * 1000; // データ更新間隔 (5分)
+        let slideshowInterval; // スライド切り替え用インターバル
+        let dataFetchInterval; // データ取得用インターバル
+
+        // スライドショーのデータ取得と表示を開始
+        async function startSlideshow() {
+            await fetchAndRenderSlides(); // 最初のデータ取得と表示
+            
+            // データ取得を定期的に行う
+            dataFetchInterval = setInterval(fetchAndRenderSlides, fetchInterval);
+        }
+
+        async function fetchAndRenderSlides() {
+            const loadingElement = document.getElementById('loading');
+            const slideshowContainer = document.getElementById('slideshow-container');
+            const lastUpdateTimeElement = document.getElementById('lastUpdateTime');
+
+            loadingElement.style.display = 'flex'; // ローディング表示
+
+            try {
+                const response = await fetch(GAS_WEB_APP_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const fetchedData = await response.json();
+
+                // 混雑状況が「実施していない」以外で、かつ企画名があるものをフィルタリング
+                allEventsData = fetchedData.filter(item => 
+                    item.状況 !== '実施していない' && item.企画名 && item.企画名.trim() !== ''
+                );
+                
+                if (allEventsData.length === 0) {
+                    slideshowContainer.innerHTML = '<div class="slide-container active"><div class="slide-title">現在、表示可能な企画はありません</div><div class="slide-comment">新しい情報をお待ちください。</div></div>';
+                    loadingElement.style.display = 'none';
+                    // データがない場合、スライドショーを停止
+                    if (slideshowInterval) clearInterval(slideshowInterval);
+                    return;
+                }
+
+                // 最終更新日時を計算して表示
+                let latestUpdateTime = null;
+                fetchedData.forEach(item => { // 全てのデータから最終更新日時を探す
+                    const itemUpdateTime = item.更新 || item.更新時刻;
+                    if (itemUpdateTime) {
+                        const currentItemDate = new Date(itemUpdateTime);
+                        if (!latestUpdateTime || currentItemDate > latestUpdateTime) {
+                            latestUpdateTime = currentItemDate;
+                        }
+                    }
+                });
+
+                if (latestUpdateTime) {
+                    lastUpdateTimeElement.textContent = latestUpdateTime.toLocaleString('ja-JP', { 
+                        year: 'numeric', month: '2-digit', day: '2-digit', 
+                        hour: '2-digit', minute: '2-digit' 
+                    });
+                }
+
+
+                // スライドショーのインターバルをクリアして再設定
+                if (slideshowInterval) {
+                    clearInterval(slideshowInterval);
+                }
+                currentSlideIndex = 0; // データ更新時にスライドを最初に戻す
+
+                // 最初のスライドを表示
+                renderSlide(allEventsData[currentSlideIndex]);
+                
+                slideshowInterval = setInterval(() => {
+                    currentSlideIndex = (currentSlideIndex + 1) % allEventsData.length;
+                    renderSlide(allEventsData[currentSlideIndex]);
+                }, slideChangeDelay);
+
+            } catch (error) {
+                console.error('スライドショーデータの取得に失敗しました:', error);
+                slideshowContainer.innerHTML = '<div class="slide-container active"><div class="slide-title">エラーが発生しました</div><div class="slide-comment">情報を読み込めませんでした。</div></div>';
+            } finally {
+                loadingElement.style.display = 'none';
+            }
+        }
+
+        function renderSlide(item) {
+            const slideshowContainer = document.getElementById('slideshow-container');
+            
+            // 古いスライドにactiveクラスを付けてopacityアニメーションを適用
+            const oldSlide = slideshowContainer.querySelector('.slide-container');
+            if (oldSlide) {
+                oldSlide.classList.remove('active');
+                // アニメーション完了後に削除するために少し待つ
+                setTimeout(() => {
+                    if (oldSlide.parentNode) {
+                        oldSlide.parentNode.removeChild(oldSlide);
+                    }
+                }, 800); // CSSのtransition時間よりも長く設定
+            }
+
+            const slideDiv = document.createElement('div');
+            slideDiv.classList.add('slide-container');
+            // スライドの背景色を状況に応じて変更する例 (オプション)
+            let statusBackgroundColorClass = '';
+            switch (item.状況) {
+                case '実施していない': statusBackgroundColorClass = 'status-実施していない'; break;
+                case '待ち時間なし': statusBackgroundColorClass = 'status-待ち時間なし'; break;
+                case '10分未満': statusBackgroundColorClass = 'status-10分未満'; break;
+                case '10分以上': statusBackgroundColorClass = 'status-10分以上'; break;
+                case '30分以上': statusBackgroundColorClass = 'status-30分以上'; break;
+                case '売り切れ・終了': statusBackgroundColorClass = 'status-売り切れ・終了'; break;
+            }
+            // スライド自体の背景色を変える場合は、bodyのbackground-colorを動的に変更
+            // document.body.style.backgroundColor = `var(--${statusBackgroundColorClass})`; // CSS変数を使う例
+            // もしくは、特定のクラスをbodyに追加してCSSで制御
+            // document.body.className = ''; // 古いクラスを削除
+            // document.body.classList.add(`body-${statusBackgroundColorClass}`);
+
+
+            slideDiv.innerHTML = `
+                <div class="slide-title">${item.企画名 || '企画名なし'}</div>
+                <div class="slide-status ${statusBackgroundColorClass}">${item.状況 || '不明'}</div>
+                ${item.コメント ? `<div class="slide-comment">${item.コメント}</div>` : ''}
+                <div class="slide-details">
+                    <span>${item.年 || ''}${item.年 ? '年' : ''}</span>
+                    <span>${item.組 || ''}${item.組 ? '組' : ''}</span>
+                    <span>${item.団体名 || ''}</span>
+                    <span>${item['場所(棟)'] || ''} ${item['場所(階)'] || ''}${item['場所(階)'] ? '階' : ''}</span>
+                    <span>${item.使用教室名 || ''}</span>
+                    <span>${item.ジャンル || ''}</span>
+                </div>
+            `;
+            
+            slideshowContainer.appendChild(slideDiv);
+            // 新しいスライドを表示するためにactiveクラスを追加
+            setTimeout(() => {
+                slideDiv.classList.add('active');
+            }, 10); // 短い遅延を入れてtransitionをトリガー
+        }
+
+        document.addEventListener('DOMContentLoaded', startSlideshow);
+    </script>
+</body>
+</html>
