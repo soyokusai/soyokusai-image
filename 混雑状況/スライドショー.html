@@ -6,6 +6,7 @@
     <title>文化祭 企画別混雑状況スライドショー</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* 基本となるスタイル（最も大きな画面サイズを想定） */
         body {
             font-family: 'Noto Sans JP', sans-serif;
             margin: 0;
@@ -18,19 +19,19 @@
             background-color: #2c3e50; /* 暗めの背景色 */
             color: #ecf0f1; /* 明るい文字色 */
             transition: background-color 0.5s ease-in-out; /* 背景色切り替え時のアニメーション */
+            font-size: 16px; /* 基準となるフォントサイズ */
         }
 
         .slide-container {
-            /* ★ここを修正★ 画面のほぼ全体を使うように調整 */
             width: 95%; /* 画面幅の95% */
             height: 90vh; /* 画面高さの90% */
-            max-width: 1400px; /* 最大幅をさらに大きく */
-            max-height: 900px; /* 最大高さを設定 (プロジェクターの解像度に合わせて調整) */
+            max-width: 1600px; /* 最大幅をさらに大きく設定 */
+            max-height: 900px; /* 最大高さを設定 */
             
             background-color: rgba(44, 62, 80, 0.9); /* 半透明のカード背景 */
             border-radius: 25px; /* 角を少し丸く */
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* 影を強調 */
-            padding: 50px; /* パディングを増やす */
+            padding: 4vw; /* ★画面幅に応じてパディングを調整★ */
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -46,56 +47,52 @@
         }
 
         .slide-title {
-            /* ★ここを修正★ フォントサイズをさらに大きく */
-            font-size: 4.5em; /* 企画名を大きく */
+            font-size: 5vw; /* ★画面幅に応じてフォントサイズを調整★ */
             font-weight: 700;
-            margin-bottom: 30px; /* マージンを増やす */
+            margin-bottom: 0.8em; /* 単位をemに変更して相対的に調整 */
             color: #f1c40f; /* 企画名の強調色 */
             line-height: 1.2;
-            word-break: break-word; /* 長い企画名も適切に折り返す */
-            max-width: 90%; /* タイトルの最大幅 */
+            word-break: break-word;
+            max-width: 90%;
         }
 
         .slide-status {
-            /* ★ここを修正★ フォントサイズとパディングを大きく */
-            font-size: 3.2em; /* 状況表示を大きく */
+            font-size: 3.5vw; /* ★画面幅に応じてフォントサイズを調整★ */
             font-weight: 700;
-            padding: 20px 40px; /* パディングを増やす */
-            border-radius: 20px; /* 角をさらに丸く */
-            margin-bottom: 35px; /* マージンを増やす */
+            padding: 0.6em 1.2em; /* 単位をemに変更 */
+            border-radius: 1.2em; /* 単位をemに変更 */
+            margin-bottom: 0.8em; /* 単位をemに変更 */
             display: inline-block;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
             transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
         }
 
         /* 混雑状況ごとの色（変更なし） */
-        .status-実施していない { background-color: #95a5a6; color: #fdfdfd; } /* グレー */
-        .status-待ち時間なし { background-color: #27ae60; color: #fdfdfd; } /* 緑 */
-        .status-10分未満 { background-color: #f39c12; color: #fdfdfd; } /* オレンジ */
-        .status-10分以上 { background-color: #e74c3c; color: #fdfdfd; } /* 赤 */
-        .status-30分以上 { background-color: #8e44ad; color: #fdfdfd; } /* 紫 */
-        .status-売り切れ・終了 { background-color: #3498db; color: #fdfdfd; } /* 青 */
+        .status-実施していない { background-color: #95a5a6; color: #fdfdfd; }
+        .status-待ち時間なし { background-color: #27ae60; color: #fdfdfd; }
+        .status-10分未満 { background-color: #f39c12; color: #fdfdfd; }
+        .status-10分以上 { background-color: #e74c3c; color: #fdfdfd; }
+        .status-30分以上 { background-color: #8e44ad; color: #fdfdfd; }
+        .status-売り切れ・終了 { background-color: #3498db; color: #fdfdfd; }
 
         .slide-comment {
-            /* ★ここを修正★ フォントサイズとマージンを大きく */
-            font-size: 2.2em; /* コメントを大きく */
+            font-size: 2.5vw; /* ★画面幅に応じてフォントサイズを調整★ */
             line-height: 1.6;
-            margin-bottom: 30px; /* マージンを増やす */
-            white-space: pre-wrap; /* 改行を保持 */
-            max-width: 85%; /* コメントの最大幅 */
+            margin-bottom: 0.6em; /* 単位をemに変更 */
+            white-space: pre-wrap;
+            max-width: 85%;
             margin-left: auto;
             margin-right: auto;
-            color: #bdc3c7; /* コメントの文字色 */
+            color: #bdc3c7;
         }
 
         .slide-details {
-            /* ★ここを修正★ フォントサイズとマージンを大きく */
-            font-size: 1.6em; /* 詳細情報を大きく */
+            font-size: 1.8vw; /* ★画面幅に応じてフォントサイズを調整★ */
             color: #b0b4b8;
-            margin-top: 20px; /* 上部マージンを追加 */
+            margin-top: 1em; /* 単位をemに変更 */
         }
         .slide-details span {
-            margin: 0 15px; /* 間隔を広げる */
+            margin: 0 0.8em; /* 単位をemに変更 */
         }
         .slide-details strong {
             color: #ecf0f1;
@@ -103,13 +100,13 @@
 
         .last-update-time {
             position: absolute;
-            bottom: 25px; /* 下からの位置を調整 */
-            right: 25px; /* 右からの位置を調整 */
-            font-size: 1.2em; /* フォントサイズを少し大きく */
+            bottom: 2vh; /* ★ビューポート高さに応じて位置を調整★ */
+            right: 2vw; /* ★ビューポート幅に応じて位置を調整★ */
+            font-size: 1.2vw; /* ★画面幅に応じてフォントサイズを調整★ */
             color: #bdc3c7;
-            background-color: rgba(0, 0, 0, 0.4); /* 背景を少し濃く */
-            padding: 12px 18px; /* パディングを増やす */
-            border-radius: 12px;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 0.6em 1em; /* 単位をemに変更 */
+            border-radius: 1em;
         }
 
         #loading {
@@ -118,29 +115,70 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9); /* ローディング背景を濃く */
+            background-color: rgba(0, 0, 0, 0.9);
             color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 3em; /* ローディング文字を大きく */
+            font-size: 4vw; /* ★画面幅に応じてフォントサイズを調整★ */
             z-index: 9999;
         }
 
-        /* スマートフォンなど小さい画面での調整 (オプション) */
+        /* スマートフォンなど、より小さい画面向けの調整 */
         @media (max-width: 768px) {
+            .slide-container {
+                padding: 5vw;
+                height: 95vh; /* スマホでは高さをさらに使う */
+            }
             .slide-title {
-                font-size: 3em;
+                font-size: 8vw; /* スマホでは相対的にもっと大きく */
             }
             .slide-status {
-                font-size: 2.2em;
-                padding: 15px 25px;
+                font-size: 5vw;
+                padding: 0.8em 1.5em;
             }
             .slide-comment {
-                font-size: 1.4em;
+                font-size: 3.5vw;
             }
             .slide-details {
-                font-size: 1em;
+                font-size: 2.5vw;
+                flex-wrap: wrap; /* 詳細情報を折り返す */
+                justify-content: center; /* 中央寄せ */
+            }
+            .slide-details span {
+                margin: 0.5em 0.8em; /* 上下のマージンも追加 */
+            }
+            .last-update-time {
+                font-size: 2vw;
+                padding: 0.5em 0.8em;
+            }
+            #loading {
+                font-size: 6vw;
+            }
+        }
+
+        /* 非常に大きな画面向けの調整（任意） */
+        @media (min-width: 1920px) {
+            body {
+                font-size: 20px; /* より大きな画面では基準フォントサイズを上げる */
+            }
+            .slide-title {
+                font-size: 96px; /* 固定ピクセル値で上限を設定することも可能 */
+            }
+            .slide-status {
+                font-size: 64px;
+            }
+            .slide-comment {
+                font-size: 40px;
+            }
+            .slide-details {
+                font-size: 32px;
+            }
+            .last-update-time {
+                font-size: 24px;
+            }
+            #loading {
+                font-size: 64px;
             }
         }
     </style>
