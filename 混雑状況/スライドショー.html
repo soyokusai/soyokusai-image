@@ -168,75 +168,76 @@
             z-index: 9999;
         }
 
-        /* 画面幅が狭い場合の調整 */
-        @media (max-width: 1200px) {
-            #main-content {
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 2列表示に近づける */
-            }
-            #app-header h1 {
-                font-size: 2.8em;
-            }
-            .building-section h2 {
-                font-size: 2.2em;
-            }
-            .floor-section h3 {
-                font-size: 1.6em;
-            }
-            .event-title {
-                font-size: 1.4em;
-            }
-            .event-status {
-                font-size: 1.1em;
-            }
+        /* レスポンシブ対応 */
+        /* PC (一般的なデスクトップ) およびプロジェクター向け */
+        @media (min-width: 1601px) {
+            body { font-size: 18px; } /* 基本フォントサイズを少し上げる */
+            #app-header h1 { font-size: 4em; }
+            .building-section h2 { font-size: 2.8em; }
+            .floor-section h3 { font-size: 2.2em; }
+            .event-title { font-size: 1.8em; }
+            .event-status { font-size: 1.5em; }
+            .event-comment { font-size: 1.2em; }
+            .event-details { font-size: 1.05em; }
         }
 
+        /* 標準的なノートPCや大きめのタブレット横向き */
+        @media (max-width: 1600px) {
+            body { font-size: 16px; }
+            #app-header h1 { font-size: 3.5em; }
+            .building-section h2 { font-size: 2.5em; }
+            .floor-section h3 { font-size: 1.8em; }
+            .event-title { font-size: 1.6em; }
+            .event-status { font-size: 1.3em; }
+            .event-comment { font-size: 1.1em; }
+            .event-details { font-size: 0.95em; }
+        }
+
+        /* 中程度の画面幅 (例: 狭めのノートPC、大きめタブレット縦向き) */
+        @media (max-width: 1200px) {
+            body { padding: 15px; }
+            #main-content {
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* 2列表示に近づける */
+                gap: 20px;
+            }
+            #app-header h1 { font-size: 2.8em; }
+            .last-update-time { font-size: 1em; }
+            .building-section { padding: 20px; }
+            .building-section h2 { font-size: 2.2em; }
+            .floor-section h3 { font-size: 1.6em; }
+            .event-title { font-size: 1.4em; }
+            .event-status { font-size: 1.1em; }
+            .event-comment { font-size: 1em; }
+            .event-details { font-size: 0.9em; }
+        }
+
+        /* 小さい画面幅 (例: 小さめタブレット縦向き、またはPCでウィンドウを非常に狭くした場合) */
         @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-            #app-header {
-                margin-bottom: 20px;
-            }
-            #app-header h1 {
-                font-size: 2.2em;
-            }
+            body { padding: 10px; }
+            #app-header { margin-bottom: 15px; }
+            #app-header h1 { font-size: 2.2em; }
             .last-update-time {
                 position: static; /* 固定位置をやめる */
-                margin-top: 15px;
+                margin-top: 10px;
                 text-align: right;
-                font-size: 0.9em;
+                font-size: 0.85em;
+                padding: 6px 12px;
             }
             #main-content {
                 grid-template-columns: 1fr; /* 1列表示 */
-                gap: 20px;
+                gap: 15px;
             }
-            .building-section {
-                padding: 20px;
-            }
-            .building-section h2 {
-                font-size: 2em;
-            }
-            .floor-section h3 {
-                font-size: 1.4em;
-            }
-            .event-item {
-                padding: 15px;
-            }
-            .event-title {
-                font-size: 1.2em;
-            }
-            .event-status {
-                font-size: 1em;
-            }
-            .event-comment {
-                font-size: 1em;
-            }
-            .event-details {
-                font-size: 0.85em;
-            }
-            #loading {
-                font-size: 2.5em;
-            }
+            .building-section { padding: 15px; }
+            .building-section h2 { font-size: 1.8em; margin-bottom: 15px; padding-bottom: 10px; }
+            .floor-section { margin-bottom: 15px; }
+            .floor-section h3 { font-size: 1.3em; margin-bottom: 10px; }
+            .event-item { padding: 12px; margin-bottom: 10px; }
+            .event-title { font-size: 1.1em; margin-bottom: 5px; }
+            .event-status { font-size: 0.95em; padding: 6px 12px; margin-bottom: 8px; }
+            .event-comment { font-size: 0.9em; margin-bottom: 8px; }
+            .event-details { font-size: 0.8em; }
+            .event-details span { margin-right: 0.6em; }
+            #loading { font-size: 2em; }
         }
     </style>
 </head>
@@ -253,7 +254,7 @@
 
     <script>
         // Google Apps ScriptのウェブアプリURL
-        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwOm38pj-RhWN8VMvMM6vNW1t9mOoRkxNRKn7EanYyk7CqHBMngQZv7fUbskjCtgpzwLw/exec'; 
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwOm38pj-RhWN8VMVMM6vNW1t9mOoRkxNRKn7EanYyk7CqHBMngQZv7fUbskjCtgpzwLw/exec'; 
 
         const fetchInterval = 60 * 1000; // データ更新間隔 (1分)
         let dataFetchInterval; // データ取得用インターバル
@@ -286,7 +287,7 @@
                 );
                 
                 if (filteredEvents.length === 0) {
-                    mainContent.innerHTML = '<div style="text-align: center; font-size: 1.5em; color: #bdc3c7;">現在、表示可能な企画はありません。</div>';
+                    mainContent.innerHTML = '<div style="text-align: center; font-size: 1.5em; color: #bdc3c7; padding: 50px;">現在、表示可能な企画はありません。</div>';
                     loadingElement.style.display = 'none';
                     return;
                 }
@@ -318,7 +319,7 @@
 
             } catch (error) {
                 console.error('データ取得に失敗しました:', error);
-                mainContent.innerHTML = '<div style="text-align: center; font-size: 1.5em; color: #e74c3c;">データの読み込み中にエラーが発生しました。</div>';
+                mainContent.innerHTML = '<div style="text-align: center; font-size: 1.5em; color: #e74c3c; padding: 50px;">データの読み込み中にエラーが発生しました。時間を置いてから再度お試しください。</div>';
             } finally {
                 loadingElement.style.display = 'none';
             }
@@ -328,9 +329,37 @@
             const grouped = {};
 
             events.forEach(event => {
-                // 場所(棟)がない、または屋外の場合は「その他」として扱う
-                const building = (event['場所(棟)'] && event['場所(棟)'] !== '屋外') ? event['場所(棟)'] : 'その他';
-                const floor = event['場所(階)'] || '不明'; // 階がない場合は「不明」
+                let building = event['場所(棟)'];
+                let floor = event['場所(階)'];
+
+                // 「場所(棟)」の処理
+                if (!building || building.trim() === '') {
+                    // 棟が空の場合、階の情報に基づいて特殊な棟に分類
+                    if (floor === 'AB棟間') {
+                        building = 'AB棟間';
+                        floor = ''; // 階は表示しない
+                    } else if (floor === 'BC棟間') {
+                        building = 'BC棟間';
+                        floor = '';
+                    } else if (floor === 'プール周辺') {
+                        building = 'プール周辺';
+                        floor = '';
+                    } else if (floor === '屋外') { // 棟が空で階が屋外の場合
+                        building = '屋外';
+                        floor = '';
+                    } else { // 棟も階も不明な場合
+                        building = 'その他';
+                        floor = ''; // 階は表示しない
+                    }
+                } else if (building === '屋外') { // 棟が「屋外」と明記されている場合
+                    building = '屋外';
+                    floor = ''; // 屋外の場合は階を表示しない
+                }
+
+                // 階が空または不明の場合は空文字列に変換
+                if (!floor || floor.trim() === '' || floor === '不明') {
+                    floor = '';
+                }
 
                 if (!grouped[building]) {
                     grouped[building] = {};
@@ -341,11 +370,20 @@
                 grouped[building][floor].push(event);
             });
 
-            // 棟と階の順序をソート (任意: 必要に応じて調整)
-            const sortedBuildings = Object.keys(grouped).sort((a, b) => {
-                if (a === 'その他') return 1; // 「その他」を最後に
-                if (b === 'その他') return -1;
-                // 数値の棟を優先（例: 1棟, 2棟, A棟, B棟など）
+            // 棟の順序をソート
+            const sortedBuildingKeys = Object.keys(grouped).sort((a, b) => {
+                // 特定の場所を最後に表示
+                const customOrderLast = ['屋外', 'AB棟間', 'BC棟間', 'プール周辺', 'その他'];
+                const indexA = customOrderLast.indexOf(a);
+                const indexB = customOrderLast.indexOf(b);
+
+                if (indexA !== -1 && indexB !== -1) {
+                    return indexA - indexB;
+                }
+                if (indexA !== -1) return 1; // aが特殊な場所なら最後に
+                if (indexB !== -1) return -1; // bが特殊な場所なら最後に
+
+                // 数値の棟を優先（例: 1棟, 2棟）
                 const numA = parseInt(a);
                 const numB = parseInt(b);
                 if (!isNaN(numA) && !isNaN(numB)) {
@@ -355,11 +393,12 @@
             });
 
             const finalGrouped = {};
-            sortedBuildings.forEach(building => {
-                finalGrouped[building] = {};
-                const sortedFloors = Object.keys(grouped[building]).sort((a, b) => {
-                    if (a === '不明') return 1; // 「不明」を最後に
-                    if (b === '不明') return -1;
+            sortedBuildingKeys.forEach(buildingKey => {
+                finalGrouped[buildingKey] = {};
+                const sortedFloorKeys = Object.keys(grouped[buildingKey]).sort((a, b) => {
+                    // 階のソート順（数字を優先、空は最後に）
+                    if (a === '' && b !== '') return 1;
+                    if (a !== '' && b === '') return -1;
                     const numA = parseInt(a);
                     const numB = parseInt(b);
                     if (!isNaN(numA) && !isNaN(numB)) {
@@ -367,8 +406,8 @@
                     }
                     return a.localeCompare(b);
                 });
-                sortedFloors.forEach(floor => {
-                    finalGrouped[building][floor] = grouped[building][floor];
+                sortedFloorKeys.forEach(floorKey => {
+                    finalGrouped[buildingKey][floorKey] = grouped[buildingKey][floorKey];
                 });
             });
 
@@ -381,12 +420,27 @@
             for (const building in groupedEvents) {
                 const buildingSection = document.createElement('section');
                 buildingSection.classList.add('building-section');
-                buildingSection.innerHTML = `<h2>${building}${building !== 'その他' ? '棟' : ''}</h2>`;
+                
+                // 棟名の表示を調整
+                let buildingNameDisplay = building;
+                if (building !== '屋外' && building !== 'AB棟間' && building !== 'BC棟間' && building !== 'プール周辺' && building !== 'その他') {
+                    buildingNameDisplay += '棟';
+                }
+                buildingSection.innerHTML = `<h2>${buildingNameDisplay}</h2>`;
 
                 for (const floor in groupedEvents[building]) {
                     const floorSection = document.createElement('div');
                     floorSection.classList.add('floor-section');
-                    floorSection.innerHTML = `<h3>${floor}${floor !== '不明' ? '階' : ''}</h3>`;
+                    
+                    // 階名の表示を調整
+                    let floorNameDisplay = floor;
+                    if (floor !== '') { // 階が空でない場合のみ表示
+                        floorNameDisplay += '階';
+                    }
+                    if (floorNameDisplay !== '') { // 階名がある場合のみh3を追加
+                         floorSection.innerHTML = `<h3>${floorNameDisplay}</h3>`;
+                    }
+                   
 
                     const eventList = document.createElement('ul');
                     eventList.classList.add('event-list');
@@ -395,10 +449,31 @@
                         const eventItem = document.createElement('li');
                         eventItem.classList.add('event-item');
 
-                        // 団体名と場所の間隔調整はJSではなくCSSで制御
-                        const buildingDisplay = (item['場所(棟)'] && item['場所(棟)'] !== '屋外') ? `${item['場所(棟)']}棟` : '';
-                        const floorDisplay = (item['場所(階)']) ? `${item['場所(階)']}階` : '';
-                        const locationDisplay = [buildingDisplay, floorDisplay, item.使用教室名].filter(Boolean).join(' ');
+                        // 場所詳細情報の結合ロジック
+                        const buildingPart = (item['場所(棟)'] && item['場所(棟)'] !== '屋外') ? `${item['場所(棟)']}棟` : '';
+                        const floorPart = (item['場所(階)'] && item['場所(階)'] !== 'AB棟間' && item['場所(階)'] !== 'BC棟間' && item['場所(階)'] !== 'プール周辺') ? `${item['場所(階)']}階` : '';
+                        
+                        // 使用教室名を優先し、教室名がない場合は棟・階（屋外や特殊な場所でなければ）
+                        let locationTextParts = [];
+                        if (item.使用教室名 && item.使用教室名.trim() !== '') {
+                            locationTextParts.push(item.使用教室名);
+                        } else if (building === '屋外' || building === 'AB棟間' || building === 'BC棟間' || building === 'プール周辺' || building === 'その他') {
+                             // 棟名がすでに特殊な場所として表示されている場合、重複を避ける
+                             // ただし、データに特別な場所名がある場合は表示
+                             if (item['場所(棟)'] === '屋外' || item['場所(階)'] === 'AB棟間' || item['場所(階)'] === 'BC棟間' || item['場所(階)'] === 'プール周辺') {
+                                locationTextParts.push(item['場所(棟)'] || item['場所(階)']);
+                             } else if (building === 'その他') {
+                                //「その他」に分類された企画の元の棟・階情報がもしあれば表示
+                                 if (buildingPart) locationTextParts.push(buildingPart);
+                                 if (floorPart) locationTextParts.push(floorPart);
+                             }
+                        } else {
+                            if (buildingPart) locationTextParts.push(buildingPart);
+                            if (floorPart) locationTextParts.push(floorPart);
+                        }
+                        
+                        const locationDisplay = locationTextParts.filter(Boolean).join(' ');
+
 
                         eventItem.innerHTML = `
                             <div class="event-title">${item.企画名 || '企画名なし'}</div>
@@ -408,7 +483,7 @@
                                 <span>${item.年 || ''}${item.年 ? '年' : ''}</span>
                                 <span>${item.組 || ''}${item.組 ? '組' : ''}</span>
                                 <span>${item.団体名 || ''}</span>
-                                <span class="location-details">${locationDisplay}</span>
+                                <span>${locationDisplay}</span>
                                 <span>${item.ジャンル || ''}</span>
                             </div>
                         `;
