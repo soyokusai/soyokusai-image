@@ -33,17 +33,25 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); 
             padding: 4vw; 
             text-align: center;
+            /* position: absolute; を追加し、スライドを重ねて表示できるようにする */
+            position: absolute; /* これが重要 */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* 中央配置 */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             box-sizing: border-box; 
-            transition: opacity 0.8s ease-in-out; 
-            opacity: 0; 
+            transition: opacity 0.8s ease-in-out; /* フェードアニメーションの時間 */
+            opacity: 0; /* 最初は非表示 */
+            pointer-events: none; /* クリックイベントを無効にする（重なったスライドで下をクリックしないため） */
         }
         
+        /* activeクラスが付いているスライドのみ表示 */
         .slide-container.active {
             opacity: 1; 
+            pointer-events: auto; /* 表示されているスライドはクリック可能にする */
         }
 
         .slide-title {
@@ -92,7 +100,9 @@
             margin-top: 1em; 
         }
         .slide-details span {
-            margin: 0 0.8em; 
+            margin: 0; 
+            padding: 0 0.2em; 
+            white-space: nowrap; 
         }
         .slide-details strong {
             color: #ecf0f1;
@@ -146,7 +156,8 @@
                 justify-content: center; 
             }
             .slide-details span {
-                margin: 0.5em 0.8em; 
+                margin: 0.2em 0.3em; 
+                padding: 0 0.2em; 
             }
             .last-update-time {
                 font-size: 2vw;
@@ -193,11 +204,12 @@
 
     <script>
         // Google Apps ScriptのウェブアプリURL
-        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwOm38pj-RhWN8VMvMM6vNW1t9mOoRkxNRKn7EanYyk7CqHBMngQZv7fUbskjCtgpzwLw/exec'; 
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwOm38pj-RhWN8VMVMM6vNW1t9mOoRkxNRKn7EanYyk7CqHBMngQZv7fUbskjCtgpzwLw/exec'; 
 
         let allEventsData = [];
         let currentSlideIndex = 0;
         const slideChangeDelay = 8000; // 各スライドの表示時間 (8秒)
+        const transitionDuration = 800; // CSSのtransition時間と同じにする (0.8秒 = 800ms)
         const fetchInterval = 5 * 60 * 1000; // データ更新間隔 (5分)
         let slideshowInterval; // スライド切り替え用インターバル
         let dataFetchInterval; // データ取得用インターバル
@@ -266,6 +278,7 @@
                 // 最初のスライドを表示
                 renderSlide(allEventsData[currentSlideIndex]);
                 
+                // 次のスライドを表示するタイマーを開始
                 slideshowInterval = setInterval(() => {
                     currentSlideIndex = (currentSlideIndex + 1) % allEventsData.length;
                     renderSlide(allEventsData[currentSlideIndex]);
@@ -279,20 +292,14 @@
             }
         }
 
+        // スライドのレンダリング（フェードイン・フェードアウトのロジックを強化）
         function renderSlide(item) {
             const slideshowContainer = document.getElementById('slideshow-container');
-            
-            // 古いスライドにactiveクラスを付けてopacityアニメーションを適用
-            const oldSlide = slideshowContainer.querySelector('.slide-container');
-            if (oldSlide) {
-                oldSlide.classList.remove('active');
-                // アニメーション完了後に削除するために少し待つ
-                setTimeout(() => {
-                    if (oldSlide.parentNode) {
-                        oldSlide.parentNode.removeChild(oldSlide);
-                    }
-                }, 800); // CSSのtransition時間よりも長く設定
-            }
+            const currentActiveSlide = slideshowContainer.querySelector('.slide-container.active');
+
+            // 新しいスライド要素を作成
+            const newSlideDiv = document.createElement('div');
+            newSlideDiv.classList.add('slide-container');
 
             // 場所(棟)の表示を調整
             let buildingDisplay = '';
@@ -300,28 +307,41 @@
                 buildingDisplay = `${item['場所(棟)']}棟`;
             }
 
-            const slideDiv = document.createElement('div');
-            slideDiv.classList.add('slide-container');
-
-            slideDiv.innerHTML = `
+            newSlideDiv.innerHTML = `
                 <div class="slide-title">${item.企画名 || '企画名なし'}</div>
                 <div class="slide-status ${getStatusClass(item.状況)}">${item.状況 || '不明'}</div>
                 ${item.コメント ? `<div class="slide-comment">${item.コメント}</div>` : ''}
                 <div class="slide-details">
                     <span>${item.年 || ''}${item.年 ? '年' : ''}</span>
                     <span>${item.組 || ''}${item.組 ? '組' : ''}</span>
-                    <span>${item.団体名 || ''}</span>
-                    <span>${buildingDisplay} ${item['場所(階)'] || ''}${item['場所(階)'] ? '階' : ''}</span>
+                    <span>${item.団体名 || ''}</span>&nbsp;&nbsp;&nbsp;<span>${buildingDisplay} ${item['場所(階)'] || ''}${item['場所(階)'] ? '階' : ''}</span>
                     <span>${item.使用教室名 || ''}</span>
                     <span>${item.ジャンル || ''}</span>
                 </div>
             `;
             
-            slideshowContainer.appendChild(slideDiv);
-            // 新しいスライドを表示するためにactiveクラスを追加
-            setTimeout(() => {
-                slideDiv.classList.add('active');
-            }, 10); // 短い遅延を入れてtransitionをトリガー
+            // 新しいスライドを追加（最初は非表示）
+            slideshowContainer.appendChild(newSlideDiv);
+
+            if (currentActiveSlide) {
+                // 現在表示中のスライドをフェードアウトさせる
+                currentActiveSlide.classList.remove('active');
+                
+                // フェードアウトが完了するのを待ってから、新しいスライドをフェードインさせる
+                // transitionDuration はCSSのtransition時間と合わせる
+                setTimeout(() => {
+                    // 古いスライドをDOMから削除
+                    if (currentActiveSlide.parentNode) {
+                        currentActiveSlide.parentNode.removeChild(currentActiveSlide);
+                    }
+                    // 新しいスライドをフェードインさせる
+                    newSlideDiv.classList.add('active');
+                }, transitionDuration); 
+
+            } else {
+                // 最初のスライドの場合、すぐに表示
+                newSlideDiv.classList.add('active');
+            }
         }
 
         // 状況に応じたCSSクラスを返すヘルパー関数 (既存のCSSクラス名と一致)
@@ -336,7 +356,6 @@
                 default: return '';
             }
         }
-
 
         document.addEventListener('DOMContentLoaded', startSlideshow);
     </script>
