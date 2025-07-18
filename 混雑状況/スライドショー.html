@@ -23,10 +23,9 @@
         }
 
         .slide-container {
-            /* ★ここを修正★ 横方向にさらに広げる */
             width: 98%; /* 画面幅の98%に拡大 */
             height: 90vh; 
-            max-width: 1920px; /* ★さらに大きな最大幅を設定 (例: フルHDの幅)★ */
+            max-width: 1920px; /* さらに大きな最大幅を設定 (例: フルHDの幅) */
             max-height: 900px; 
             
             background-color: rgba(44, 62, 80, 0.9); 
@@ -193,7 +192,7 @@
     <div class="last-update-time">最終更新: <span id="lastUpdateTime">--/-- --:--</span></div>
 
     <script>
-        // ★★★ここにデプロイしたGASのウェブアプリURLを貼り付けてください★★★
+        // Google Apps ScriptのウェブアプリURL
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwOm38pj-RhWN8VMvMM6vNW1t9mOoRkxNRKn7EanYyk7CqHBMngQZv7fUbskjCtgpzwLw/exec'; 
 
         let allEventsData = [];
@@ -225,9 +224,9 @@
                 }
                 const fetchedData = await response.json();
 
-                // 混雑状況が「実施していない」以外で、かつ企画名があるものをフィルタリング
+                // 企画名があるものをフィルタリング（「実施していない」も含むように変更）
                 allEventsData = fetchedData.filter(item => 
-                    item.状況 !== '実施していない' && item.企画名 && item.企画名.trim() !== ''
+                    item.企画名 && item.企画名.trim() !== ''
                 );
                 
                 if (allEventsData.length === 0) {
@@ -295,6 +294,12 @@
                 }, 800); // CSSのtransition時間よりも長く設定
             }
 
+            // 場所(棟)の表示を調整
+            let buildingDisplay = '';
+            if (item['場所(棟)'] && item['場所(棟)'] !== '屋外') {
+                buildingDisplay = `${item['場所(棟)']}棟`;
+            }
+
             const slideDiv = document.createElement('div');
             slideDiv.classList.add('slide-container');
 
@@ -306,7 +311,7 @@
                     <span>${item.年 || ''}${item.年 ? '年' : ''}</span>
                     <span>${item.組 || ''}${item.組 ? '組' : ''}</span>
                     <span>${item.団体名 || ''}</span>
-                    <span>${item['場所(棟)'] || ''} ${item['場所(階)'] || ''}${item['場所(階)'] ? '階' : ''}</span>
+                    <span>${buildingDisplay} ${item['場所(階)'] || ''}${item['場所(階)'] ? '階' : ''}</span>
                     <span>${item.使用教室名 || ''}</span>
                     <span>${item.ジャンル || ''}</span>
                 </div>
