@@ -113,7 +113,7 @@
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* 混雑状況ごとの色 (リスト表示から引き継ぎ) */
+        /* 混雑状況ごとの色 */
         .status-実施していない { background-color: #95a5a6; color: #fdfdfd; }
         .status-待ち時間なし { background-color: #27ae60; color: #fdfdfd; }
         .status-10分未満 { background-color: #f39c12; color: #fdfdfd; }
@@ -206,9 +206,6 @@
         let currentSlideIndex = 0;
         let slideshowInterval; // スライド切り替え用インターバル
 
-        // 特殊な場所名を定義
-        const specialLocations = ['AB棟間', 'BC棟間', 'プール周辺', '屋外'];
-
         document.addEventListener('DOMContentLoaded', () => {
             startSlideshow(); // 初回表示と更新開始
         });
@@ -233,8 +230,9 @@
                 }
                 const fetchedData = await response.json();
 
+                // 企画名が空の行はフィルタリング
                 const filteredEvents = fetchedData.filter(item => 
-                    item.企画名 && item.企画名.trim() !== ''
+                    item.企画名 && String(item.企画名).trim() !== ''
                 );
                 
                 if (filteredEvents.length === 0) {
@@ -297,50 +295,24 @@
             }
         }
 
+        // データを「棟」と「階」でグループ化するシンプルな関数
         function groupEventsByBuildingAndFloor(events) {
             const grouped = {};
 
             events.forEach(event => {
-                let buildingName = '';
-                let floorName = ''; // フロア（階）はここでは空に設定
+                // 場所(棟)と場所(階)を取得し、トリムする。空の場合は空文字列に。
+                const building = event['場所(棟)'] ? String(event['場所(棟)']).trim() : '';
+                const floor = event['場所(階)'] ? String(event['場所(階)']).trim() : '';
 
-                const usedRoomName = event.使用教室名 ? String(event.使用教室名).trim() : '';
-                const buildingFromData = event['場所(棟)'] ? String(event['場所(棟)']).trim() : '';
-                const floorFromData = event['場所(階)'] ? String(event['場所(階)']).trim() : '';
-
-                // 優先順位1: 使用教室名が特殊な場所の場合
-                if (specialLocations.includes(usedRoomName)) {
-                    buildingName = usedRoomName;
-                    // floorName は空のまま
-                } 
-                // 優先順位2: 場所(棟)が屋外の場合
-                else if (buildingFromData === '屋外') {
-                    buildingName = '屋外';
-                    // floorName は空のまま
-                }
-                // 優先順位3: 通常の棟・階の組み合わせ
-                else if (buildingFromData !== '') {
-                    buildingName = buildingFromData;
-                    floorName = floorFromData; // ここで階情報を保持
-                }
-                // それ以外（棟も教室名も空で特殊な場所ではない場合）
-                else {
-                    buildingName = 'その他';
-                    // floorName は空のまま
-                }
-
-                // 階が空または「不明」の場合は空文字列に統一
-                if (!floorName || floorName === '不明') {
-                    floorName = '';
-                }
-
-                // グループ化のキーを「棟-階」の形式にする（階が空の場合は「棟-」）
-                const groupKey = `${buildingName}-${floorName}`;
+                // 棟と階の組み合わせをキーとする
+                // 例: "1棟-1階", "屋外-", "その他-"
+                // 階が空の場合でも、棟とセットでユニークなキーを生成
+                const groupKey = `${building || '不明な棟'}-${floor || '不明な階'}`;
 
                 if (!grouped[groupKey]) {
                     grouped[groupKey] = {
-                        building: buildingName,
-                        floor: floorName,
+                        building: building,
+                        floor: floor,
                         events: []
                     };
                 }
@@ -350,42 +322,40 @@
             return grouped;
         }
 
+        // グループ化されたデータからスライドデータを生成
         function createFloorSlideData(groupedEvents) {
             const floorSlides = [];
 
-            // 棟の表示順を定義 (優先順位の高い順)
+            // 棟の表示順を定義 (数字、アルファベット、その他)
             const customBuildingOrder = [
-                '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', // 通常の棟の数字・アルファベット順
-                ...specialLocations, // 特殊な場所をここに含める
-                'その他' // 「その他」は常に最後に
+                '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
+                '屋外', 'その他', '不明な棟' // 特殊な場所や不明な棟は最後に
             ];
 
-            // グループキー（例: "1-1", "屋外-", "AB棟間-"）でソート
+            // グループキーを元にソート
             const sortedGroupKeys = Object.keys(groupedEvents).sort((keyA, keyB) => {
-                const [buildingA, floorA] = keyA.split('-');
-                const [buildingB, floorB] = keyB.split('-');
+                const groupA = groupedEvents[keyA];
+                const groupB = groupedEvents[keyB];
 
-                // まず棟でソート
-                const indexA = customBuildingOrder.indexOf(buildingA);
-                const indexB = customBuildingOrder.indexOf(buildingB);
+                // 1. 棟のカスタムオーダーでソート
+                const indexA = customBuildingOrder.indexOf(groupA.building);
+                const indexB = customBuildingOrder.indexOf(groupB.building);
 
                 if (indexA !== indexB) {
-                    // 両方customBuildingOrderにあればその順序
                     if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-                    // 片方だけあればそちらを優先（先に表示したい順）
-                    if (indexA !== -1) return -1;
-                    if (indexB !== -1) return 1;
+                    if (indexA !== -1) return -1; // AがカスタムオーダーにあればAを優先
+                    if (indexB !== -1) return 1;  // BがカスタムオーダーにあればBを優先
                 }
 
-                // customBuildingOrderにない、または同じ棟の場合は階でソート
-                if (floorA === '' && floorB !== '') return 1;
-                if (floorA !== '' && floorB === '') return -1;
-                const numA = parseInt(floorA);
-                const numB = parseInt(floorB);
+                // 2. 同じ棟の場合、階でソート (数字優先、空は最後)
+                if (groupA.floor === '' && groupB.floor !== '') return 1;
+                if (groupA.floor !== '' && groupB.floor === '') return -1;
+                const numA = parseInt(groupA.floor);
+                const numB = parseInt(groupB.floor);
                 if (!isNaN(numA) && !isNaN(numB)) {
                     return numA - numB;
                 }
-                return floorA.localeCompare(floorB);
+                return groupA.floor.localeCompare(groupB.floor);
             });
 
             sortedGroupKeys.forEach(groupKey => {
@@ -394,14 +364,25 @@
 
                 if (events.length > 0) {
                     let slideTitle = group.building;
-                    if (!specialLocations.includes(group.building) && group.building !== 'その他') {
+                    
+                    // 「屋外」「その他」「不明な棟」の場合は「棟」をつけない
+                    if (slideTitle !== '屋外' && slideTitle !== 'その他' && slideTitle !== '不明な棟') {
                         slideTitle += '棟';
                     }
+
                     if (group.floor !== '') {
-                        slideTitle += ` ${group.floor}階`;
+                        // 階が「不明な階」の場合は「階」をつけない
+                        if (group.floor === '不明な階') {
+                             // 「不明な棟 不明な階」のようにする
+                        } else {
+                            slideTitle += ` ${group.floor}階`;
+                        }
                     } else if (group.building === 'その他') {
-                        slideTitle = 'その他 (場所不明)'; // 「その他」の場合のタイトル調整
+                        slideTitle = 'その他'; // 「その他」の場合のタイトル調整
+                    } else if (group.building === '不明な棟') {
+                         slideTitle = '場所不明'; // 棟も階も不明の場合のタイトル
                     }
+
 
                     floorSlides.push({
                         title: slideTitle,
@@ -428,38 +409,34 @@
                 const groupName = item.団体名 || '';
                 const genre = item.ジャンル || '';
                 
+                // 場所表示ロジックを簡素化
                 let locationText = '';
+                const building = item['場所(棟)'] ? String(item['場所(棟)']).trim() : '';
+                const floor = item['場所(階)'] ? String(item['場所(階)']).trim() : '';
                 const usedRoomName = item.使用教室名 ? String(item.使用教室名).trim() : '';
-                const buildingFromData = item['場所(棟)'] ? String(item['場所(棟)']).trim() : '';
-                const floorFromData = item['場所(階)'] ? String(item['場所(階)']).trim() : '';
 
-                // 「使用教室名」が特殊な場所名として使われている場合は、それを直接表示
-                if (specialLocations.includes(usedRoomName)) {
-                    locationText = usedRoomName;
-                }
-                // それ以外で、使用教室名があればそれを表示
-                else if (usedRoomName !== '') {
-                    locationText = usedRoomName;
-                }
-                // 使用教室名がなく、場所(棟)と場所(階)から構成する場合
-                else {
+                if (usedRoomName !== '') {
+                    locationText = usedRoomName; // 使用教室名があればそれを優先
+                } else {
                     const parts = [];
-                    if (buildingFromData !== '') {
-                        // 屋外でない棟は「棟」をつける
-                        if (buildingFromData === '屋外') {
+                    if (building !== '' && building !== '不明な棟') {
+                        if (building === '屋外') {
                             parts.push('屋外');
                         } else {
-                            parts.push(`${buildingFromData}棟`);
+                            parts.push(`${building}棟`);
                         }
                     }
-                    if (floorFromData !== '') {
-                        // 階が特殊な場所名でない場合のみ「階」をつける
-                        if (!specialLocations.includes(floorFromData)) {
-                            parts.push(`${floorFromData}階`);
-                        }
+                    if (floor !== '' && floor !== '不明な階') {
+                        parts.push(`${floor}階`);
                     }
                     locationText = parts.join(' ');
                 }
+                
+                // locationTextが空の場合の最終調整
+                if (locationText === '') {
+                    locationText = '場所情報なし';
+                }
+
 
                 eventListHtml += `
                     <li class="event-item-in-slide">
