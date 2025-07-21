@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文化祭 フロア別混雑状況スライドショー</title>
+    <title>文化祭 フロア別混雑状況スライドショー (タイトル小・枠あり)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* 基本となるスタイル（PC/プロジェクター表示を想定） */
@@ -23,14 +23,14 @@
 
         .slide-container {
             width: 98%; /* 画面幅の98%に拡大 */
-            height: 90vh; 
+            height: 90vh; /* 画面高の90% */
             max-width: 1920px; /* フルHDの幅を想定した最大幅 */
             max-height: 900px; /* 最大高さ */
             
             background-color: rgba(44, 62, 80, 0.9); 
             border-radius: 25px; 
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); 
-            padding: 2vw; /* 画面幅に応じてパディングを調整 */
+            padding:    0.8vw; /* 画面幅に応じてパディングを調整 */
             text-align: center;
             position: absolute; /* スライドを重ねて表示できるようにする */
             top: 50%;
@@ -54,17 +54,17 @@
 
         .slide-header {
             width: 100%;
-            padding-bottom: 1.5vw;
+            padding-bottom: 0.8vw; /* タイトル下の余白を調整 */
             border-bottom: 2px dashed #5e738a;
-            margin-bottom: 1.5vw;
+            margin-bottom: 0.8vw; /* タイトルセクション下の余白を調整 */
         }
 
         .slide-header h2 {
-            font-size: 4vw; /* 画面幅に応じてフォントサイズを調整 */
+            font-size: 2vw; /* タイトル全体のフォントサイズ */
             font-weight: 700;
             color: #f1c40f; 
-            margin: 0;
-            line-height: 1.2;
+            margin: 0; 
+            line-height: 1.2; 
             word-break: break-word; 
         }
 
@@ -77,6 +77,13 @@
             flex-grow: 1; /* 残りのスペースを埋める */
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
+            
+            /* 2列表示のためのFlexbox設定 */
+            display: flex;
+            flex-wrap: wrap; /* アイテムを折り返す */
+            justify-content: space-between; /* アイテム間にスペースを均等に配置 */
+            align-content: flex-start; /* 複数行のコンテンツを上揃え */
+            gap: 1.5vw; /* アイテム間の隙間 */
         }
 
         .event-list-in-slide::-webkit-scrollbar {
@@ -87,12 +94,16 @@
             background-color: #4a627a; 
             border-radius: 10px;
             padding: 1vw 1.5vw; 
-            margin-bottom: 1vw; 
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
             align-items: flex-start; /* 左揃え */
             text-align: left; /* テキストも左揃え */
+            
+            /* 2列表示のための幅設定 */
+            width: calc(50% - 0.75vw); /* 2列表示にするための幅 (gapの半分を引く) */
+            box-sizing: border-box; /* paddingとborderをwidthに含める */
+            margin-bottom: 0; /* Flexboxのgapを使うので個別のmarginは不要 */
         }
 
         .event-title-in-slide {
@@ -131,10 +142,12 @@
         .event-details-in-slide {
             font-size: 1vw; 
             color: #b0b4b8;
+            margin-top: auto; /* 下部に固定 */
         }
         .event-details-in-slide span {
             margin-right: 0.7vw; 
             white-space: nowrap;
+            display: inline-block; /* 各詳細を横並びにする */
         }
 
         .last-update-time {
@@ -147,7 +160,14 @@
             padding: 0.6em 1em; 
             border-radius: 1em;
             z-index: 100; /* スライドより手前に表示 */
+            text-align: right;
         }
+        .last-update-time .update-message {
+            display: block; /* 改行して表示 */
+            font-size: 0.8em; /* 最終更新時刻より小さく */
+            color: #99aab5;
+        }
+
 
         #loading {
             position: fixed;
@@ -167,22 +187,56 @@
         /* 非常に大きな画面向けの調整 */
         @media (min-width: 1920px) {
             body { font-size: 20px; }
-            .slide-header h2 { font-size: 76px; }
-            .event-item-in-slide { padding: 20px 30px; margin-bottom: 20px; }
+            .slide-header h2 { font-size: 57px; }
+            .event-item-in-slide { padding: 20px 30px; }
             .event-title-in-slide { font-size: 38px; }
             .event-status-in-slide { font-size: 28px; padding: 10px 20px; border-radius: 16px; }
             .event-comment-in-slide { font-size: 24px; }
             .event-details-in-slide { font-size: 20px; }
             .last-update-time { font-size: 24px; }
+            .last-update-time .update-message { font-size: 0.8em; }
             #loading { font-size: 76px; }
+            .event-list-in-slide { gap: 30px; } /* 2列間の隙間 */
+            .event-item-in-slide { width: calc(50% - 15px); } /* 2列の幅調整 */
         }
         /* 中程度の画面幅（ノートPCなど）での調整 */
         @media (max-width: 1440px) {
-            .slide-header h2 { font-size: 50px; }
+            .slide-header h2 { font-size: 37.5px; }
             .event-title-in-slide { font-size: 24px; }
             .event-status-in-slide { font-size: 18px; }
             .event-comment-in-slide { font-size: 16px; }
             .event-details-in-slide { font-size: 14px; }
+            .event-list-in-slide { gap: 1.5vw; } /* 2列間の隙間 */
+            .event-item-in-slide { width: calc(50% - 0.75vw); } /* 2列の幅調整 */
+        }
+        /* スマートフォンなどの小さい画面では1列に戻す */
+        @media (max-width: 768px) {
+            body { padding: 5px; }
+            .slide-container {
+                width: 95%;
+                height: 95vh;
+                padding: 15px;
+            }
+            .slide-header {
+                padding-bottom: 10px;
+                margin-bottom: 10px;
+            }
+            .slide-header h2 { font-size: 1.5em; }
+            .event-list-in-slide {
+                flex-direction: column; /* 1列にする */
+                gap: 10px; /* 1列になった時のアイテム間の隙間 */
+            }
+            .event-item-in-slide {
+                width: 100%; /* 1列表示 */
+                padding: 10px 15px;
+            }
+            .event-title-in-slide { font-size: 1.2em; }
+            .event-status-in-slide { font-size: 0.9em; padding: 5px 8px; border-radius: 5px; }
+            .event-comment-in-slide { font-size: 0.85em; }
+            .event-details-in-slide { font-size: 0.75em; }
+            .last-update-time { font-size: 0.8em; bottom: 1vh; right: 1vh; }
+            .last-update-time .update-message { font-size: 0.9em; }
+            #loading { font-size: 2em; }
         }
     </style>
 </head>
@@ -190,17 +244,20 @@
     <div id="loading">情報を読み込み中...</div>
 
     <div id="slideshow-container">
-        </div>
+    </div>
 
-    <div class="last-update-time">最終更新: <span id="lastUpdateTime">--/-- --:--</span></div>
+    <div class="last-update-time">
+        最終更新: <span id="lastUpdateTime">--/-- --:--</span>
+        <span class="update-message">※情報は5分ごとに自動更新されます</span>
+    </div>
 
     <script>
         // ★★★ ここにあなたのGoogle Apps Script ウェブアプリのURLを貼り付けてください ★★★
-        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwOm38pj-RhWN8VMVMM6vNW1t9mOoRkxNRKn7EanYyk7CqHBMngQZv7fUbskjCtgpzwLw/exec'; 
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSv-gycem2VzkHe1BAZIOZz3GlT4LPnf188qEH7guY1w399NfojC645zdMZH64RiKaGw/exec'; 
 
         const slideChangeDelay = 10000; // 各フロアスライドの表示時間 (10秒)
         const transitionDuration = 800; // CSSのtransition時間と同じ (0.8秒 = 800ms)
-        const fetchInterval = 60 * 1000; // データ更新間隔 (1分)
+        const fetchInterval = 5 * 60 * 1000; // データ更新間隔 (5分)
 
         let allFloorSlides = []; // フロアスライドのデータ配列
         let currentSlideIndex = 0;
@@ -292,22 +349,20 @@
                     year: 'numeric', month: '2-digit', day: '2-digit', 
                     hour: '2-digit', minute: '2-digit' 
                 });
+            } else {
+                document.getElementById('lastUpdateTime').textContent = '不明';
             }
         }
 
-        // データを「棟」と「階」でグループ化するシンプルな関数
+        // データを「棟」と「階」でグループ化する関数 (シンプル版)
         function groupEventsByBuildingAndFloor(events) {
             const grouped = {};
 
             events.forEach(event => {
-                // 場所(棟)と場所(階)を取得し、トリムする。空の場合は空文字列に。
                 const building = event['場所(棟)'] ? String(event['場所(棟)']).trim() : '';
                 const floor = event['場所(階)'] ? String(event['場所(階)']).trim() : '';
 
-                // 棟と階の組み合わせをキーとする
-                // 例: "1棟-1階", "屋外-", "その他-"
-                // 階が空の場合でも、棟とセットでユニークなキーを生成
-                const groupKey = `${building || '不明な棟'}-${floor || '不明な階'}`;
+                const groupKey = `${building || '不明な棟'}-${floor || ''}`;
 
                 if (!grouped[groupKey]) {
                     grouped[groupKey] = {
@@ -326,28 +381,24 @@
         function createFloorSlideData(groupedEvents) {
             const floorSlides = [];
 
-            // 棟の表示順を定義 (数字、アルファベット、その他)
             const customBuildingOrder = [
                 '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
-                '屋外', 'その他', '不明な棟' // 特殊な場所や不明な棟は最後に
+                '屋外', 'その他', '不明な棟'
             ];
 
-            // グループキーを元にソート
             const sortedGroupKeys = Object.keys(groupedEvents).sort((keyA, keyB) => {
                 const groupA = groupedEvents[keyA];
                 const groupB = groupedEvents[keyB];
 
-                // 1. 棟のカスタムオーダーでソート
                 const indexA = customBuildingOrder.indexOf(groupA.building);
                 const indexB = customBuildingOrder.indexOf(groupB.building);
 
                 if (indexA !== indexB) {
                     if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-                    if (indexA !== -1) return -1; // AがカスタムオーダーにあればAを優先
-                    if (indexB !== -1) return 1;  // BがカスタムオーダーにあればBを優先
+                    if (indexA !== -1) return -1;
+                    if (indexB !== -1) return 1;
                 }
 
-                // 2. 同じ棟の場合、階でソート (数字優先、空は最後)
                 if (groupA.floor === '' && groupB.floor !== '') return 1;
                 if (groupA.floor !== '' && groupB.floor === '') return -1;
                 const numA = parseInt(groupA.floor);
@@ -363,29 +414,26 @@
                 const events = group.events;
 
                 if (events.length > 0) {
-                    let slideTitle = group.building;
+                    let slideTitleContent = group.building;
                     
-                    // 「屋外」「その他」「不明な棟」の場合は「棟」をつけない
-                    if (slideTitle !== '屋外' && slideTitle !== 'その他' && slideTitle !== '不明な棟') {
-                        slideTitle += '棟';
+                    if (slideTitleContent !== '屋外' && slideTitleContent !== 'その他' && slideTitleContent !== '不明な棟' && slideTitleContent !== '') {
+                        slideTitleContent += '棟';
+                    } else if (slideTitleContent === '') { 
+                        slideTitleContent = '場所不明';
                     }
 
                     if (group.floor !== '') {
-                        // 階が「不明な階」の場合は「階」をつけない
-                        if (group.floor === '不明な階') {
-                             // 「不明な棟 不明な階」のようにする
+                        if (!isNaN(parseInt(group.floor))) {
+                            slideTitleContent += ` ${group.floor}階`;
                         } else {
-                            slideTitle += ` ${group.floor}階`;
+                            slideTitleContent += ` ${group.floor}`;
                         }
-                    } else if (group.building === 'その他') {
-                        slideTitle = 'その他'; // 「その他」の場合のタイトル調整
-                    } else if (group.building === '不明な棟') {
-                         slideTitle = '場所不明'; // 棟も階も不明の場合のタイトル
+                    } else if (group.building === '') { 
+                        slideTitleContent = '場所不明';
                     }
 
-
                     floorSlides.push({
-                        title: slideTitle,
+                        title: slideTitleContent,
                         events: events
                     });
                 }
@@ -409,14 +457,13 @@
                 const groupName = item.団体名 || '';
                 const genre = item.ジャンル || '';
                 
-                // 場所表示ロジックを簡素化
                 let locationText = '';
                 const building = item['場所(棟)'] ? String(item['場所(棟)']).trim() : '';
                 const floor = item['場所(階)'] ? String(item['場所(階)']).trim() : '';
                 const usedRoomName = item.使用教室名 ? String(item.使用教室名).trim() : '';
 
                 if (usedRoomName !== '') {
-                    locationText = usedRoomName; // 使用教室名があればそれを優先
+                    locationText = usedRoomName;
                 } else {
                     const parts = [];
                     if (building !== '' && building !== '不明な棟') {
@@ -427,16 +474,18 @@
                         }
                     }
                     if (floor !== '' && floor !== '不明な階') {
-                        parts.push(`${floor}階`);
+                            if (!isNaN(parseInt(floor))) {
+                                parts.push(`${floor}階`);
+                            } else {
+                                parts.push(`${floor}`);
+                            }
                     }
                     locationText = parts.join(' ');
                 }
                 
-                // locationTextが空の場合の最終調整
                 if (locationText === '') {
                     locationText = '場所情報なし';
                 }
-
 
                 eventListHtml += `
                     <li class="event-item-in-slide">
@@ -474,7 +523,6 @@
             }
         }
 
-        // 状況に応じたCSSクラスを返すヘルパー関数
         function getStatusClass(status) {
             switch (status) {
                 case '実施していない': return 'status-実施していない';
