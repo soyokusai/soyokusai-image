@@ -125,12 +125,12 @@
         }
 
         /* 混雑状況ごとの色 */
-        .status-実施していない { background-color: #95a5a6; color: #fdfdfd; }
-        .status-待ち時間なし { background-color: #27ae60; color: #fdfdfd; }
-        .status-10分未満 { background-color: #f39c12; color: #fdfdfd; }
-        .status-10分以上 { background-color: #e74c3c; color: #fdfdfd; }
-        .status-30分以上 { background-color: #8e44ad; color: #fdfdfd; }
-        .status-売り切れ・終了 { background-color: #3498db; color: #fdfdfd; }
+        .status-実施していない { background-color: #c8c8cb; color: #000000; } /* グレー系 */
+        .status-待ち時間なし { background-color: #cbf266; color: #000000	; } /* 緑系 (空いています) */
+        .status-10分未満 { background-color: #ffff99; color: 	#000000	; } /* 黄色系 (やや混雑) */
+        .status-10分以上 { background-color: #ff9900; color: #ffffff; } /* 赤系 (混雑) */
+        .status-30分以上 { background-color: #9a0079; color: #ffffff; } /* 紫系 (超混雑) */
+        .status-売り切れ・終了 { background-color: #ff2800; color: #ffffff; } /* 青系 (売り切れ・終了) */
 
         .event-comment-in-slide {
             font-size: 1.2vw; 
@@ -382,8 +382,7 @@
             const floorSlides = [];
 
             const customBuildingOrder = [
-                '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
-                '屋外', 'その他', '不明な棟'
+                'A棟', 'B棟', 'C棟', '屋外'
             ];
 
             const sortedGroupKeys = Object.keys(groupedEvents).sort((keyA, keyB) => {
@@ -417,7 +416,7 @@
                     let slideTitleContent = group.building;
                     
                     if (slideTitleContent !== '屋外' && slideTitleContent !== 'その他' && slideTitleContent !== '不明な棟' && slideTitleContent !== '') {
-                        slideTitleContent += '棟';
+                        slideTitleContent += '';
                     } else if (slideTitleContent === '') { 
                         slideTitleContent = '場所不明';
                     }
