@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文化祭 企画別混雑状況</title>
+    <title>文化祭 混雑状況(表版)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* ★フォントを Noto Sans JP に変更★ */
+            font-family: 'Noto Sans JP', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 10px;
             background-color: #f4f4f4;
             color: #333;
@@ -18,7 +20,7 @@
             font-size: 1.8em;
         }
 
-/* ★説明文のスタイルを追加★ */
+        /* ★説明文のスタイルを追加★ */
         .description-container {
             max-width: 960px;
             margin: 0 auto 20px;
@@ -39,6 +41,7 @@
         .description-container strong {
             color: #2c3e50;
         }
+
 
         /* 最終更新日時表示エリア */
         #lastUpdateTimeContainer {
@@ -105,92 +108,69 @@
 
 
         /* テーブルコンテナ */
-.event-table-container {
-    max-width: 960px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: auto; /* 横と縦のスクロールバーを必要に応じて表示 */
-    height: 70vh; /* テーブルの高さに上限を設定し、テーブル内でスクロールさせる */
-    -webkit-overflow-scrolling: touch;
-}
-.event-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 1000px; /* 列が増えたので、必要に応じて最小幅を調整 */
-}
+        .event-table-container {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: auto; /* 横と縦のスクロールバーを必要に応じて表示 */
+            height: 70vh; /* テーブルの高さに上限を設定し、テーブル内でスクロールさせる */
+            -webkit-overflow-scrolling: touch;
+        }
+        .event-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px; /* 列が増えたので、必要に応じて最小幅を調整 */
+        }
 
-/* ★ここを修正・調整★ 全てのセルにデフォルトで折り返しなし (nowrap) を設定 */
-.event-table th,
-.event-table td {
-    padding: 10px 12px;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9em;
-    white-space: nowrap; /* デフォルトは折り返しなし */
-}
+        /* 全てのセルにデフォルトで折り返しなし (nowrap) を設定 */
+        .event-table th,
+        .event-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+            white-space: nowrap; /* デフォルトは折り返しなし */
+        }
 
-/* コメント列のスタイル（折り返しあり） */
-.event-table td.comment-cell {
-    white-space: pre-wrap; /* スプレッドシートの改行と自動折り返しを両方有効に */
-    max-width: 250px; /* 必要に応じて最大幅を設定 */
-    word-break: break-word; /* 長い単語も折り返す */
-}
-
-
-/* ★一番上のヘッダー行を固定する設定★ */
-.event-table th {
-    background-color: #eef2f7; /* ヘッダーの背景色を明確に設定 */
-    color: #4a5568;
-    font-weight: bold;
-    text-transform: uppercase;
-    position: sticky; /* 固定する */
-    top: 0; /* 上端に固定 */
-    z-index: 10; /* 他の要素より手前に表示 (重要) */
-    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.05);
-}
-
-/* ★企画名（最初の列）を固定する設定★ */
-.event-table th:first-child, /* ヘッダー行の最初のセル */
-.event-table td:first-child { /* 各行の最初のセル */
-    position: sticky; /* 固定する */
-    left: 0; /* 左端に固定 */
-    z-index: 11; /* 他のセルよりも手前に表示 */
-    background-color: #f6f9fc; /* 固定される列の背景色 (ヘッダーと異なる色でも良い) */
-    white-space: pre-wrap; /* ★企画名もスプレッドシートの改行と自動折り返しを両方有効に★ */
-    min-width: 150px; /* 最小幅を設定 (任意) */
-    max-width: 250px; /* 最大幅を設定 (任意) */
-    word-break: break-word; /* 長い単語も折り返すようにする (任意) */
-}
-
-/* ★固定された最初のヘッダーセル（企画名のヘッダー）のスタイル★ */
-.event-table th:first-child {
-    z-index: 12; /* ★ここを最も高い値に設定 (重要:交差部分)★ */
-    background-color: #eef2f7; /* ヘッダーの背景色と同じにすると自然 */
-}
+        /* コメント列のスタイル（折り返しあり） */
+        .event-table td.comment-cell {
+            white-space: pre-wrap; /* スプレッドシートの改行と自動折り返しを両方有効に */
+            max-width: 250px; /* 必要に応じて最大幅を設定 */
+            word-break: break-word; /* 長い単語も折り返す */
+        }
 
 
         .event-table th {
-            background-color: #eef2f7;
+            background-color: #eef2f7; /* ヘッダーの背景色を明確に設定 */
             color: #4a5568;
             font-weight: bold;
             text-transform: uppercase;
-            position: sticky;
-            top: 0;
-            z-index: 1;
+            position: sticky; /* 固定する */
+            top: 0; /* 上端に固定 */
+            z-index: 10; /* 他の要素より手前に表示 (重要) */
             box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.05);
         }
-        .event-table tr:hover {
-            background-color: #f9f9f9;
+
+        /* 企画名（最初の列）を固定する設定 */
+        .event-table th:first-child, /* ヘッダー行の最初のセル */
+        .event-table td:first-child { /* 各行の最初のセル */
+            position: sticky; /* 固定する */
+            left: 0; /* 左端に固定 */
+            z-index: 11; /* 他のセルよりも手前に表示 */
+            background-color: #f6f9fc; /* 固定される列の背景色 (ヘッダーと異なる色でも良い) */
+            white-space: pre-wrap; /* 企画名もスプレッドシートの改行と自動折り返しを両方有効に */
+            min-width: 150px; /* 最小幅を設定 (任意) */
+            max-width: 250px; /* 最大幅を設定 (任意) */
+            word-break: break-word; /* 長い単語も折り返すようにする (任意) */
         }
-        .event-table td a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .event-table td a:hover {
-            text-decoration: underline;
+
+        /* 固定された最初のヘッダーセル（企画名のヘッダー）のスタイル */
+        .event-table th:first-child {
+            z-index: 12; /* ここを最も高い値に設定 (重要:交差部分) */
+            background-color: #eef2f7; /* ヘッダーの背景色と同じにすると自然 */
         }
 
         /* 混雑状況セルのスタイル */
@@ -203,8 +183,8 @@
         }
         /* 新しい状況名に合わせて色を調整 */
         .status-実施していない { background-color: #c8c8cb; color: #000000; } /* グレー系 */
-        .status-待ち時間なし { background-color: #cbf266; color: #000000; } /* 緑系 (空いています) */
-        .status-10分未満 { background-color: #ffeeba; color: #000000; } /* 黄色系 (やや混雑) */
+        .status-待ち時間なし { background-color: #cbf266; color: #000000	; } /* 緑系 (空いています) */
+        .status-10分未満 { background-color: #ffff99; color: 	#000000	; } /* 黄色系 (やや混雑) */
         .status-10分以上 { background-color: #ff9900; color: #ffffff; } /* 赤系 (混雑) */
         .status-30分以上 { background-color: #9a0079; color: #ffffff; } /* 紫系 (超混雑) */
         .status-売り切れ・終了 { background-color: #ff2800; color: #ffffff; } /* 青系 (売り切れ・終了) */
@@ -221,6 +201,14 @@
             color: #ffffff; /* デフォルトの文字色か、必要に応じて調整 */
             font-weight: bold; /* 必要であれば文字を太字に */
         }
+
+        /* ジャンルごとの文字色 */
+        .genre-飲食 { color: #8B4513; font-weight: bold; } /* 茶色 */
+        .genre-発表 { color: #800080; font-weight: bold; } /* 紫 */
+        .genre-展示 { color: #006400; font-weight: bold; } /* 濃い緑 */
+        .genre-体験 { color: #DAA520; font-weight: bold; } /* 金色 */
+        .genre-お化け屋敷 { color: #4B0082; font-weight: bold; } /* 濃い紫 */
+        /* その他のジャンルがあれば追加 */
 
 
         /* ローディングメッセージ */
@@ -242,26 +230,40 @@
 <body>
     <h1>文化祭 企画別混雑状況</h1>
 
-<div class="description-container">
+    <div class="description-container">
         <p>
-            このページでは、<strong>文化祭の各企画の現在の混雑状況をリアルタイムで確認できます。</strong><br>
+            このページでは、<strong>文化祭の各企画の現在の混雑状況</strong>をリアルタイムで確認できます。
             快適に文化祭を楽しむために、ぜひご活用ください！
         </p>
         <p>
-            <b>【使い方】</b><br>
-            ・<strong>フィルター項目を使って、特定の企画を絞り込めます。</strong><br>
-            ・<strong>表はスクロールすることができます。</strong><br>
-            ・ページは<b>5分ごとに自動更新</b>されます。<br>
-            ・企画名を押すと、<b>その企画に該当するフロアが表示されます。</b>
+            <strong>【使い方】</strong><br>
+            ・各企画の混雑状況は、色分けされたセルで表示されます。<br>
+            ・状況の色は以下の通りです：<br>
+            ・実施していない：<span class="status-実施していない">グレー</span><br>
+            ・待ち時間なし：<span class="status-待ち時間なし">明るい黄緑</span><br>
+            ・10分未満：<span class="status-10分未満">クリーム</span><br>
+            ・10分以上：<span class="status-10分以上">オレンジ</span><br>
+            ・30分以上：<span class="status-30分以上">紫</span><br>
+            ・売り切れ・終了：<span class="status-売り切れ・終了">赤</span><br>
+            ・各企画の年、組、団体名、場所(棟)、場所(階)、使用教室名、ジャンルも表示されます。<br>
+            ・企画名のセルは固定されているため、スクロールしても常に表示されます。<br>
+            ・コメント欄には、企画からのお知らせが記載されています。<br>
+            ・フィルターを使って、特定の年、組、団体名、場所(棟)、場所(階)、使用教室名、ジャンルで絞り込むことができます。<br>
+            ・状況のチェックボックスを使って、特定の混雑状況のみを表示できます。<br>
+            ・フィルターを適用すると、該当する企画のみが表示されます。<br>
+            ・フィルターをクリアするには、各フィルターの選択をリセットしてください。<br>
+            ・フィルターを適用した状態で、再度データを取得すると、最新の状況が反映されます。<br>
+            ・情報は<strong>5分ごとに自動更新</strong>されますので、常に最新の状況をご確認いただけます。<br>
+            ・スマートフォンなど、見にくい場合は、別の表示方式も用意しています。<br>　更新時刻下の<strong>「表示方式を切り替える」</strong>リンクをクリックしてください。
         </p>
         <p>
-            <strong>※混雑状況はあくまで目安です。</strong><br>
-                <strong>各企画の生徒が手動で更新しているため、実際の状況と異なる場合がありますので、ご了承ください。</strong><br>
+            ※混雑状況はあくまで目安です。実際の状況と異なる場合がありますので、ご了承ください。
         </p>
     </div>
 
     <div id="lastUpdateTimeContainer">
         最終更新: <span id="lastUpdateTime">--/-- --:--</span>
+        <div class="theme-links"> <a href="https://soyokusai.github.io/soyokusai-image/%E6%B7%B7%E9%9B%91%E7%8A%B6%E6%B3%81/フロア別混雑状況.html" style="color: #0041ff; text-decoration: none; margin-left: 10px;">表示方式を切り替える</a>
     </div>
 
     <div class="filter-search-container">
@@ -339,19 +341,19 @@
     <div class="event-table-container">
         <table class="event-table" id="crowdStatusTable">
             <thead>
-    <tr>
-        <th>企画名</th>
-        <th>状況</th>
-        <th>コメント</th>
-        <th>年</th>
-        <th>組</th>
-        <th>団体名</th>
-        <th>場所(棟)</th>
-        <th>場所(階)</th>
-        <th>使用教室名</th>
-        <th>ジャンル</th>
-    </tr>
-</thead>
+                <tr>
+                    <th>企画名</th>
+                    <th>状況</th>
+                    <th>コメント</th>
+                    <th>年</th>
+                    <th>組</th>
+                    <th>団体名</th>
+                    <th>場所(棟)</th>
+                    <th>場所(階)</th>
+                    <th>使用教室名</th>
+                    <th>ジャンル</th>
+                </tr>
+            </thead>
             <tbody>
                 </tbody>
         </table>
@@ -360,7 +362,7 @@
 
     <script>
         // ★★★ここにデプロイしたGASのウェブアプリURLを貼り付けてください★★★
-        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwOm38pj-RhWN8VMvMM6vNW1t9mOoRkxNRKn7EanYyk7CqHBMngQZv7fUbskjCtgpzwLw/exec'; 
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSv-gycem2VzkHe1BAZIOZz3GlT4LPnf188qEH7guY1w399NfojC645zdMZH64RiKaGw/exec'; 
 
         let allEventsData = []; 
         let uniqueYears = new Set(); 
@@ -556,105 +558,105 @@
         }
 
         // データを元にHTMLテーブルをレンダリングする関数
-function renderTable(eventsToDisplay) {
-    const tableBody = document.querySelector('#crowdStatusTable tbody');
-    const noResultsElement = document.getElementById('noResults');
-    tableBody.innerHTML = ''; 
+        function renderTable(eventsToDisplay) {
+            const tableBody = document.querySelector('#crowdStatusTable tbody');
+            const noResultsElement = document.getElementById('noResults');
+            tableBody.innerHTML = ''; 
 
-    if (eventsToDisplay.length === 0) {
-        noResultsElement.textContent = '検索条件に合う企画が見つかりませんでした。';
-        noResultsElement.style.display = 'block';
-    } else {
-        noResultsElement.style.display = 'none';
-        eventsToDisplay.forEach(item => {
-            const row = document.createElement('tr');
-
-            // ★ここから、新しい列の表示順に合わせて<td>要素の作成と追加の順番を調整します★
-
-            // 企画名
-            const nameCell = document.createElement('td');
-            if (item.リンクURL && item.リンクURL.startsWith('http')) {
-                const link = document.createElement('a');
-                link.href = item.リンクURL;
-                link.textContent = item.企画名 || '';
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
-                nameCell.appendChild(link);
+            if (eventsToDisplay.length === 0) {
+                noResultsElement.textContent = '検索条件に合う企画が見つかりませんでした。';
+                noResultsElement.style.display = 'block';
             } else {
-                nameCell.textContent = item.企画名 || '';
+                noResultsElement.style.display = 'none';
+                eventsToDisplay.forEach(item => {
+                    const row = document.createElement('tr');
+
+                    // ★ここから、新しい列の表示順に合わせて<td>要素の作成と追加の順番を調整します★
+
+                    // 企画名
+                    const nameCell = document.createElement('td');
+                    if (item.リンクURL && item.リンクURL.startsWith('http')) {
+                        const link = document.createElement('a');
+                        link.href = item.リンクURL;
+                        link.textContent = item.企画名 || '';
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        nameCell.appendChild(link);
+                    } else {
+                        nameCell.textContent = item.企画名 || '';
+                    }
+                    row.appendChild(nameCell);
+
+                    // 状況
+                    const statusCell = document.createElement('td');
+                    statusCell.classList.add('crowd-status-cell');
+                    let statusClass = '';
+                    switch (item.状況) {
+                        case '実施していない': statusClass = 'status-実施していない'; break;
+                        case '待ち時間なし': statusClass = 'status-待ち時間なし'; break;
+                        case '10分未満': statusClass = 'status-10分未満'; break;
+                        case '10分以上': statusClass = 'status-10分以上'; break;
+                        case '30分以上': statusClass = 'status-30分以上'; break;
+                        case '売り切れ・終了': statusClass = 'status-売り切れ・終了'; break; 
+                        default: statusClass = '';
+                    }
+                    statusCell.classList.add(statusClass);
+                    statusCell.textContent = item.状況 || '';
+                    row.appendChild(statusCell);
+
+                    // コメント
+                    const commentCell = document.createElement('td');
+                    commentCell.classList.add('comment-cell');
+                    commentCell.textContent = item.コメント || ''; 
+                    row.appendChild(commentCell);
+
+                    // 年
+                    const yearCell = document.createElement('td');
+                    yearCell.textContent = item.年 || ''; 
+                    if (item.年) {
+                        yearCell.classList.add(`year-cell-${item.年}`); 
+                    }
+                    row.appendChild(yearCell);
+
+                    // 組
+                    const classCell = document.createElement('td');
+                    classCell.textContent = item.組 || '';
+                    row.appendChild(classCell);
+
+                    // 団体名
+                    const groupNameCell = document.createElement('td');
+                    groupNameCell.textContent = item.団体名 || '';
+                    row.appendChild(groupNameCell);
+
+                    // 場所(棟)
+                    const buildingCell = document.createElement('td');
+                    buildingCell.textContent = item['場所(棟)'] || '';
+                    row.appendChild(buildingCell);
+
+                    // 場所(階)
+                    const floorCell = document.createElement('td');
+                    floorCell.textContent = item['場所(階)'] || '';
+                    row.appendChild(floorCell);
+
+                    // 使用教室名
+                    const roomNameCell = document.createElement('td');
+                    roomNameCell.textContent = item.使用教室名 || '';
+                    row.appendChild(roomNameCell);
+
+                    // ジャンル
+                    const genreCell = document.createElement('td');
+                    genreCell.textContent = item.ジャンル || '';
+                    if (item.ジャンル) {
+                        genreCell.classList.add(`genre-${item.ジャンル}`); 
+                    }
+                    row.appendChild(genreCell);
+
+                    // ★ここまで、新しい列の表示順に合わせて<td>要素の作成と追加の順番を調整します★
+
+                    tableBody.appendChild(row);
+                });
             }
-            row.appendChild(nameCell);
-
-            // 状況
-            const statusCell = document.createElement('td');
-            statusCell.classList.add('crowd-status-cell');
-            let statusClass = '';
-            switch (item.状況) {
-                case '実施していない': statusClass = 'status-実施していない'; break;
-                case '待ち時間なし': statusClass = 'status-待ち時間なし'; break;
-                case '10分未満': statusClass = 'status-10分未満'; break;
-                case '10分以上': statusClass = 'status-10分以上'; break;
-                case '30分以上': statusClass = 'status-30分以上'; break;
-                case '売り切れ・終了': statusClass = 'status-売り切れ・終了'; break; 
-                default: statusClass = '';
-            }
-            statusCell.classList.add(statusClass);
-            statusCell.textContent = item.状況 || '';
-            row.appendChild(statusCell);
-
-            // コメント
-            const commentCell = document.createElement('td');
-            commentCell.classList.add('comment-cell');
-            commentCell.textContent = item.コメント || ''; 
-            row.appendChild(commentCell);
-
-            // 年
-            const yearCell = document.createElement('td');
-            yearCell.textContent = item.年 || ''; 
-            if (item.年) {
-                yearCell.classList.add(`year-cell-${item.年}`); 
-            }
-            row.appendChild(yearCell);
-
-            // 組
-            const classCell = document.createElement('td');
-            classCell.textContent = item.組 || '';
-            row.appendChild(classCell);
-
-            // 団体名
-            const groupNameCell = document.createElement('td');
-            groupNameCell.textContent = item.団体名 || '';
-            row.appendChild(groupNameCell);
-
-            // 場所(棟)
-            const buildingCell = document.createElement('td');
-            buildingCell.textContent = item['場所(棟)'] || '';
-            row.appendChild(buildingCell);
-
-            // 場所(階)
-            const floorCell = document.createElement('td');
-            floorCell.textContent = item['場所(階)'] || '';
-            row.appendChild(floorCell);
-
-            // 使用教室名
-            const roomNameCell = document.createElement('td');
-            roomNameCell.textContent = item.使用教室名 || '';
-            row.appendChild(roomNameCell);
-
-            // ジャンル
-            const genreCell = document.createElement('td');
-            genreCell.textContent = item.ジャンル || '';
-            if (item.ジャンル) {
-                genreCell.classList.add(`genre-${item.ジャンル}`); 
-            }
-            row.appendChild(genreCell);
-
-            // ★ここまで、新しい列の表示順に合わせて<td>要素の作成と追加の順番を調整します★
-
-            tableBody.appendChild(row);
-        });
-    }
-}
+        }
 
         // イベントリスナーの設定
         document.addEventListener('DOMContentLoaded', () => {

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>相翼祭 混雑状況</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* 基本となるスタイル（PC/プロジェクター表示を想定） */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* スクロールバーを非表示 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* 画面全体に広がるように */
+            background-color: #2c3e50; /* 暗めの背景色 */
+            color: #ecf0f1; /* 明るい文字色 */
+            font-size: 16px; /* 基準となるフォントサイズ */
+        }
+
+        .slide-container {
+            width: 98%; /* 画面幅の98%に拡大 */
+            height: 90vh; /* 画面高の90% */
+            max-width: 1920px; /* フルHDの幅を想定した最大幅 */
+            max-height: 900px; /* 最大高さ */
+            
+            background-color: rgba(44, 62, 80, 0.9); 
+            border-radius: 25px; 
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); 
+            padding:    0.8vw; /* 画面幅に応じてパディングを調整 */
+            text-align: center;
+            position: absolute; /* スライドを重ねて表示できるようにする */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* 中央配置 */
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box; 
+            transition: opacity 0.8s ease-in-out; /* フェードアニメーションの時間 */
+            opacity: 0; /* 最初は非表示 */
+            pointer-events: none; /* クリックイベントを無効にする（重なったスライドで下をクリックしないため） */
+            justify-content: flex-start; /* コンテンツを上揃え */
+            align-items: center; /* 中央揃え */
+        }
+        
+        /* activeクラスが付いているスライドのみ表示 */
+        .slide-container.active {
+            opacity: 1; 
+            pointer-events: auto; /* 表示されているスライドはクリック可能にする */
+        }
+
+        .slide-header {
+            width: 100%;
+            padding-bottom: 0.8vw; /* タイトル下の余白を調整 */
+            border-bottom: 2px dashed #5e738a;
+            margin-bottom: 0.8vw; /* タイトルセクション下の余白を調整 */
+        }
+
+        .slide-header h2 {
+            font-size: 2vw; /* タイトル全体のフォントサイズ */
+            font-weight: 700;
+            color: #f1c40f; 
+            margin: 0; 
+            line-height: 1.2; 
+            word-break: break-word; 
+        }
+
+        .event-list-in-slide {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            overflow-y: auto; /* 企画が多い場合にスクロール */
+            flex-grow: 1; /* 残りのスペースを埋める */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+            
+            /* 2列表示のためのFlexbox設定 */
+            display: flex;
+            flex-wrap: wrap; /* アイテムを折り返す */
+            justify-content: space-between; /* アイテム間にスペースを均等に配置 */
+            align-content: flex-start; /* 複数行のコンテンツを上揃え */
+            gap: 1.5vw; /* アイテム間の隙間 */
+        }
+
+        .event-list-in-slide::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .event-item-in-slide {
+            background-color: #4a627a; 
+            border-radius: 10px;
+            padding: 1vw 1.5vw; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* 左揃え */
+            text-align: left; /* テキストも左揃え */
+            
+            /* 2列表示のための幅設定 */
+            width: calc(50% - 0.75vw); /* 2列表示にするための幅 (gapの半分を引く) */
+            box-sizing: border-box; /* paddingとborderをwidthに含める */
+            margin-bottom: 0; /* Flexboxのgapを使うので個別のmarginは不要 */
+        }
+
+        .event-title-in-slide {
+            font-size: 2vw; /* 画面幅に応じてフォントサイズを調整 */
+            font-weight: 700;
+            color: #ecf0f1;
+            margin-bottom: 0.5vw;
+            line-height: 1.3;
+        }
+
+        .event-status-in-slide {
+            font-size: 1.5vw; /* 画面幅に応じてフォントサイズを調整 */
+            font-weight: 700;
+            padding: 0.5vw 1vw; 
+            border-radius: 0.8vw; 
+            margin-bottom: 0.5vw; 
+            display: inline-block;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 混雑状況ごとの色 */
+        .status-実施していない { background-color: #c8c8cb; color: #000000; } /* グレー系 */
+        .status-待ち時間なし { background-color: #cbf266; color: #000000	; } /* 緑系 (空いています) */
+        .status-10分未満 { background-color: #ffff99; color: 	#000000	; } /* 黄色系 (やや混雑) */
+        .status-10分以上 { background-color: #ff9900; color: #ffffff; } /* 赤系 (混雑) */
+        .status-30分以上 { background-color: #9a0079; color: #ffffff; } /* 紫系 (超混雑) */
+        .status-売り切れ・終了 { background-color: #ff2800; color: #ffffff; } /* 青系 (売り切れ・終了) */
+
+        .event-comment-in-slide {
+            font-size: 1.2vw; 
+            color: #bdc3c7;
+            margin-bottom: 0.5vw; 
+            white-space: pre-wrap;
+        }
+
+        .event-details-in-slide {
+            font-size: 1vw; 
+            color: #b0b4b8;
+            margin-top: auto; /* 下部に固定 */
+        }
+        .event-details-in-slide span {
+            margin-right: 0.7vw; 
+            white-space: nowrap;
+            display: inline-block; /* 各詳細を横並びにする */
+        }
+
+        .last-update-time {
+            position: absolute;
+            bottom: 2vh; 
+            right: 2vw; 
+            font-size: 1.2vw; 
+            color: #bdc3c7;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 0.6em 1em; 
+            border-radius: 1em;
+            z-index: 100; /* スライドより手前に表示 */
+            text-align: right;
+        }
+        .last-update-time .update-message {
+            display: block; /* 改行して表示 */
+            font-size: 0.8em; /* 最終更新時刻より小さく */
+            color: #99aab5;
+        }
+
+
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); 
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4vw; 
+            z-index: 9999;
+        }
+
+        /* 非常に大きな画面向けの調整 */
+        @media (min-width: 1920px) {
+            body { font-size: 20px; }
+            .slide-header h2 { font-size: 57px; }
+            .event-item-in-slide { padding: 20px 30px; }
+            .event-title-in-slide { font-size: 38px; }
+            .event-status-in-slide { font-size: 28px; padding: 10px 20px; border-radius: 16px; }
+            .event-comment-in-slide { font-size: 24px; }
+            .event-details-in-slide { font-size: 20px; }
+            .last-update-time { font-size: 24px; }
+            .last-update-time .update-message { font-size: 0.8em; }
+            #loading { font-size: 76px; }
+            .event-list-in-slide { gap: 30px; } /* 2列間の隙間 */
+            .event-item-in-slide { width: calc(50% - 15px); } /* 2列の幅調整 */
+        }
+        /* 中程度の画面幅（ノートPCなど）での調整 */
+        @media (max-width: 1440px) {
+            .slide-header h2 { font-size: 37.5px; }
+            .event-title-in-slide { font-size: 24px; }
+            .event-status-in-slide { font-size: 18px; }
+            .event-comment-in-slide { font-size: 16px; }
+            .event-details-in-slide { font-size: 14px; }
+            .event-list-in-slide { gap: 1.5vw; } /* 2列間の隙間 */
+            .event-item-in-slide { width: calc(50% - 0.75vw); } /* 2列の幅調整 */
+        }
+        /* スマートフォンなどの小さい画面では1列に戻す */
+        @media (max-width: 768px) {
+            body { padding: 5px; }
+            .slide-container {
+                width: 95%;
+                height: 95vh;
+                padding: 15px;
+            }
+            .slide-header {
+                padding-bottom: 10px;
+                margin-bottom: 10px;
+            }
+            .slide-header h2 { font-size: 1.5em; }
+            .event-list-in-slide {
+                flex-direction: column; /* 1列にする */
+                gap: 10px; /* 1列になった時のアイテム間の隙間 */
+            }
+            .event-item-in-slide {
+                width: 100%; /* 1列表示 */
+                padding: 10px 15px;
+            }
+            .event-title-in-slide { font-size: 1.2em; }
+            .event-status-in-slide { font-size: 0.9em; padding: 5px 8px; border-radius: 5px; }
+            .event-comment-in-slide { font-size: 0.85em; }
+            .event-details-in-slide { font-size: 0.75em; }
+            .last-update-time { font-size: 0.8em; bottom: 1vh; right: 1vh; }
+            .last-update-time .update-message { font-size: 0.9em; }
+            #loading { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">情報を読み込み中...</div>
+
+    <div id="slideshow-container">
+    </div>
+
+    <div class="last-update-time">
+        最終更新: <span id="lastUpdateTime">--/-- --:--</span>
+        <span class="update-message">※情報は5分ごとに自動更新されます</span>
+        <span class="sorry_message">※混雑状況はあくまで目安です。実際の状況と異なる場合がありますので、ご了承ください。</span>
+    </div>
+
+    <script>
+        // ★★★ ここにあなたのGoogle Apps Script ウェブアプリのURLを貼り付けてください ★★★
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSv-gycem2VzkHe1BAZIOZz3GlT4LPnf188qEH7guY1w399NfojC645zdMZH64RiKaGw/exec'; 
+
+        const slideChangeDelay = 10000; // 各フロアスライドの表示時間 (10秒)
+        const transitionDuration = 800; // CSSのtransition時間と同じ (0.8秒 = 800ms)
+        const fetchInterval = 5 * 60 * 1000; // データ更新間隔 (5分)
+
+        let allFloorSlides = []; // フロアスライドのデータ配列
+        let currentSlideIndex = 0;
+        let slideshowInterval; // スライド切り替え用インターバル
+
+        document.addEventListener('DOMContentLoaded', () => {
+            startSlideshow(); // 初回表示と更新開始
+        });
+
+        async function startSlideshow() {
+            await fetchAndPrepareSlides(); // 最初のデータ取得とスライド準備
+            
+            // データ取得を定期的に行う
+            setInterval(fetchAndPrepareSlides, fetchInterval);
+        }
+
+        async function fetchAndPrepareSlides() {
+            const loadingElement = document.getElementById('loading');
+            const slideshowContainer = document.getElementById('slideshow-container');
+
+            loadingElement.style.display = 'flex'; // ローディング表示
+
+            try {
+                const response = await fetch(GAS_WEB_APP_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTPエラー: ${response.status}`);
+                }
+                const fetchedData = await response.json();
+
+                // 企画名が空の行はフィルタリング
+                const filteredEvents = fetchedData.filter(item => 
+                    item.企画名 && String(item.企画名).trim() !== ''
+                );
+                
+                if (filteredEvents.length === 0) {
+                    slideshowContainer.innerHTML = '<div class="slide-container active"><div class="slide-header"><h2>現在、表示可能な企画はありません</h2></div><div class="event-list-in-slide">情報を更新中です。</div></div>';
+                    if (slideshowInterval) clearInterval(slideshowInterval);
+                    return;
+                }
+
+                updateLastUpdateTime(fetchedData);
+                
+                const groupedEvents = groupEventsByBuildingAndFloor(filteredEvents);
+                allFloorSlides = createFloorSlideData(groupedEvents);
+
+                if (allFloorSlides.length === 0) {
+                    slideshowContainer.innerHTML = '<div class="slide-container active"><div class="slide-header"><h2>表示できるフロア情報がありません</h2></div><div class="event-list-in-slide">情報を更新中です。</div></div>';
+                    if (slideshowInterval) clearInterval(slideshowInterval);
+                    return;
+                }
+
+                // スライドショーのインターバルをクリアして再設定
+                if (slideshowInterval) {
+                    clearInterval(slideshowInterval);
+                }
+                currentSlideIndex = 0; // データ更新時にスライドを最初に戻す
+
+                // 最初のスライドを表示
+                renderFloorSlide(allFloorSlides[currentSlideIndex]);
+                
+                // 次のスライドを表示するタイマーを開始
+                slideshowInterval = setInterval(() => {
+                    currentSlideIndex = (currentSlideIndex + 1) % allFloorSlides.length;
+                    renderFloorSlide(allFloorSlides[currentSlideIndex]);
+                }, slideChangeDelay);
+
+            } catch (error) {
+                console.error('データ取得エラー:', error);
+                slideshowContainer.innerHTML = '<div class="slide-container active"><div class="slide-header"><h2>エラーが発生しました</h2></div><div class="event-list-in-slide">データを読み込めませんでした。GASのURLを確認するか、時間を置いてから再度お試しください。</div></div>';
+            } finally {
+                loadingElement.style.display = 'none';
+            }
+        }
+
+        function updateLastUpdateTime(data) {
+            let latestUpdateTime = null;
+            data.forEach(item => {
+                const itemUpdateTime = item.更新 || item.更新時刻;
+                if (itemUpdateTime) {
+                    const currentItemDate = new Date(itemUpdateTime);
+                    if (!latestUpdateTime || currentItemDate > latestUpdateTime) {
+                        latestUpdateTime = currentItemDate;
+                    }
+                }
+            });
+
+            if (latestUpdateTime) {
+                document.getElementById('lastUpdateTime').textContent = latestUpdateTime.toLocaleString('ja-JP', { 
+                    year: 'numeric', month: '2-digit', day: '2-digit', 
+                    hour: '2-digit', minute: '2-digit' 
+                });
+            } else {
+                document.getElementById('lastUpdateTime').textContent = '不明';
+            }
+        }
+
+        // データを「棟」と「階」でグループ化する関数 (シンプル版)
+        function groupEventsByBuildingAndFloor(events) {
+            const grouped = {};
+
+            events.forEach(event => {
+                const building = event['場所(棟)'] ? String(event['場所(棟)']).trim() : '';
+                const floor = event['場所(階)'] ? String(event['場所(階)']).trim() : '';
+
+                const groupKey = `${building || '不明な棟'}-${floor || ''}`;
+
+                if (!grouped[groupKey]) {
+                    grouped[groupKey] = {
+                        building: building,
+                        floor: floor,
+                        events: []
+                    };
+                }
+                grouped[groupKey].events.push(event);
+            });
+
+            return grouped;
+        }
+
+        // グループ化されたデータからスライドデータを生成
+        function createFloorSlideData(groupedEvents) {
+            const floorSlides = [];
+
+            const customBuildingOrder = [
+                'A棟', 'B棟', 'C棟', '屋外'
+            ];
+
+            const sortedGroupKeys = Object.keys(groupedEvents).sort((keyA, keyB) => {
+                const groupA = groupedEvents[keyA];
+                const groupB = groupedEvents[keyB];
+
+                const indexA = customBuildingOrder.indexOf(groupA.building);
+                const indexB = customBuildingOrder.indexOf(groupB.building);
+
+                if (indexA !== indexB) {
+                    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                    if (indexA !== -1) return -1;
+                    if (indexB !== -1) return 1;
+                }
+
+                if (groupA.floor === '' && groupB.floor !== '') return 1;
+                if (groupA.floor !== '' && groupB.floor === '') return -1;
+                const numA = parseInt(groupA.floor);
+                const numB = parseInt(groupB.floor);
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return numA - numB;
+                }
+                return groupA.floor.localeCompare(groupB.floor);
+            });
+
+            sortedGroupKeys.forEach(groupKey => {
+                const group = groupedEvents[groupKey];
+                const events = group.events;
+
+                if (events.length > 0) {
+                    let slideTitleContent = group.building;
+                    
+                    if (slideTitleContent !== '屋外' && slideTitleContent !== 'その他' && slideTitleContent !== '不明な棟' && slideTitleContent !== '') {
+                        slideTitleContent += '';
+                    } else if (slideTitleContent === '') { 
+                        slideTitleContent = '場所不明';
+                    }
+
+                    if (group.floor !== '') {
+                        if (!isNaN(parseInt(group.floor))) {
+                            slideTitleContent += ` ${group.floor}階`;
+                        } else {
+                            slideTitleContent += ` ${group.floor}`;
+                        }
+                    } else if (group.building === '') { 
+                        slideTitleContent = '場所不明';
+                    }
+
+                    floorSlides.push({
+                        title: slideTitleContent,
+                        events: events
+                    });
+                }
+            });
+
+            return floorSlides;
+        }
+
+
+        function renderFloorSlide(slideData) {
+            const slideshowContainer = document.getElementById('slideshow-container');
+            const currentActiveSlide = slideshowContainer.querySelector('.slide-container.active');
+
+            const newSlideDiv = document.createElement('div');
+            newSlideDiv.classList.add('slide-container');
+
+            let eventListHtml = '';
+            slideData.events.forEach(item => {
+                const year = item.年 ? `${item.年}年` : '';
+                const klass = item.組 ? `${item.組}組` : '';
+                const groupName = item.団体名 || '';
+                const genre = item.ジャンル || '';
+                
+                let locationText = '';
+                const building = item['場所(棟)'] ? String(item['場所(棟)']).trim() : '';
+                const floor = item['場所(階)'] ? String(item['場所(階)']).trim() : '';
+                const usedRoomName = item.使用教室名 ? String(item.使用教室名).trim() : '';
+
+                if (usedRoomName !== '') {
+                    locationText = usedRoomName;
+                } else {
+                    const parts = [];
+                    if (building !== '' && building !== '不明な棟') {
+                        if (building === '屋外') {
+                            parts.push('屋外');
+                        } else {
+                            parts.push(`${building}棟`);
+                        }
+                    }
+                    if (floor !== '' && floor !== '不明な階') {
+                            if (!isNaN(parseInt(floor))) {
+                                parts.push(`${floor}階`);
+                            } else {
+                                parts.push(`${floor}`);
+                            }
+                    }
+                    locationText = parts.join(' ');
+                }
+                
+                if (locationText === '') {
+                    locationText = '場所情報なし';
+                }
+
+                eventListHtml += `
+                    <li class="event-item-in-slide">
+                        <div class="event-title-in-slide">${item.企画名 || '企画名なし'}</div>
+                        <div class="event-status-in-slide ${getStatusClass(item.状況)}">${item.状況 || '不明'}</div>
+                        ${item.コメント ? `<div class="event-comment-in-slide">${item.コメント}</div>` : ''}
+                        <div class="event-details-in-slide">
+                            <span>${year}</span>
+                            <span>${klass}</span>
+                            <span>${groupName}</span>
+                            <span>${locationText}</span>
+                            <span>${genre}</span>
+                        </div>
+                    </li>
+                `;
+            });
+
+            newSlideDiv.innerHTML = `
+                <div class="slide-header"><h2>${slideData.title}</h2></div>
+                <ul class="event-list-in-slide">${eventListHtml}</ul>
+            `;
+            
+            slideshowContainer.appendChild(newSlideDiv);
+
+            if (currentActiveSlide) {
+                currentActiveSlide.classList.remove('active');
+                setTimeout(() => {
+                    if (currentActiveSlide.parentNode) {
+                        currentActiveSlide.parentNode.removeChild(currentActiveSlide);
+                    }
+                    newSlideDiv.classList.add('active');
+                }, transitionDuration); 
+            } else {
+                newSlideDiv.classList.add('active');
+            }
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case '実施していない': return 'status-実施していない';
+                case '待ち時間なし': return 'status-待ち時間なし';
+                case '10分未満': return 'status-10分未満';
+                case '10分以上': return 'status-10分以上';
+                case '30分以上': return 'status-30分以上';
+                case '売り切れ・終了': return 'status-売り切れ・終了';
+                default: return '';
+            }
+        }
+    </script>
+</body>
+</html>
