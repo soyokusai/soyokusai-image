@@ -7,15 +7,15 @@ body {
     font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f7f6;
-    color: #333;
+    background-color: rgb(244, 247, 246);
+    color: #000000;
     line-height: 1.6;
 }
 
 /* ヘッダー */
 header {
-    background-color: #4CAF50; /* 緑色 */
-    color: white;
+    background-color: #87e7b0; /* 緑色 */
+    color: #000000;
     padding: 20px;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -54,7 +54,7 @@ h2 {
 
 /* アレルギー絞り込みセクション */
 .allergens-filter .filter-container {
-    background-color: #f0fdf0; /* 薄い緑の背景 */
+    background-color: #cbf266; /* 薄い緑の背景 */
     border: 1px solid #dcdcdc;
     border-radius: 8px;
     padding: 15px;
@@ -67,7 +67,7 @@ h2 {
 
 .allergens-filter .allergen-group h3 {
     font-size: 1.1em;
-    color: #4CAF50;
+    color: #000000;
     margin-top: 0;
     margin-bottom: 10px;
     border-bottom: 1px dashed #c8e6c9; /* 軽めの区切り線 */
@@ -127,17 +127,17 @@ h2 {
 }
 
 .filter-button.include {
-    background-color: #2196F3; /* 青色 */
+    background-color: #ff2800; /* 青色 */
 }
 .filter-button.include:hover {
-    background-color: #1976D2;
+    background-color: #ff99a0;
 }
 
 .filter-button.exclude {
-    background-color: #F44336; /* 赤色 */
+    background-color: #0041ff; /* 赤色 */
 }
 .filter-button.exclude:hover {
-    background-color: #D32F2F;
+    background-color: #66ccff;
 }
 
 /* 混入の可能性チェックボックスのスタイル */
@@ -275,33 +275,20 @@ h2 {
 }
 
 .allergens-info li {
-    background-color: #ffe0b2; /* 薄いオレンジ */
+    background-color: #ff9900; /* 薄いオレンジ */
     padding: 4px 8px; /* パディングを少し小さく */
     border-radius: 5px;
     display: inline-block; /* 横並びにする */
-    color: #e65100; /* オレンジ */
+    color: #ffffff; /* オレンジ */
     font-weight: bold;
-}
-
-/* アレルギー物質がない場合の表示 (削除されたが念のためCSSは残す) */
-.allergens-info li.no-allergen {
-    background-color: #c8e6c9; /* 薄い緑 */
-    color: #2e7d32;
 }
 
 /* 混入の可能性があるアレルギー表示スタイル */
 .allergens-info li.cross-contamination {
-    background-color: #ffcdd2; /* 薄い赤 */
-    color: #b71c1c; /* 濃い赤 */
+    background-color: #ffff99; /* 薄い赤 */
+    color: #000000; /* 濃い赤 */
     font-weight: bold;
-    border: 1px dashed #ef9a9a; /* 点線ボーダーを追加 */
-}
-/* 混入の可能性なしの場合の表示 (削除されたが念のためCSSは残す) */
-.allergens-info li.cross-contamination.no-contamination {
-    background-color: #e0f2f7; /* 薄い水色 */
-    color: #00838f;
-    font-weight: normal;
-    border: none;
+    border: 1px dashed #faf500; /* 点線ボーダーを追加 */
 }
 
 
@@ -324,17 +311,17 @@ h2 {
 
 /* 重要事項・ご注意 */
 .important-notes {
-    background-color: #fffde7; /* 薄い黄色 */
-    border-left: 5px solid #ffeb3b; /* 黄色 */
+    background-color: #ffff99; /* 薄い黄色 */
+    border-left: 5px solid #faf500; /* 黄色 */
     padding: 20px;
     border-radius: 8px;
     font-size: 0.95em;
-    color: #555;
+    color: #000000;
 }
 
 .important-notes h2 {
-    color: #fbc02d; /* 濃い黄色 */
-    border-bottom: 1px solid #ffeb3b;
+    color: #000000; /* 濃い黄色 */
+    border-bottom: 1px solid #faf500;
 }
 
 /* フッター */
