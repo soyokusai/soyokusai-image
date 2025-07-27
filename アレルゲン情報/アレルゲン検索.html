@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>相翼祭模擬店 アレルゲン検索サイト</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>相翼祭模擬店 アレルゲン検索サイト</h1>
+        <p>アレルギーをお持ちの方が安心してご利用いただけるよう、各メニューのアレルゲン情報をまとめています。</p>
+    </header>
+
+    <main>
+        <section class="allergens-filter">
+            <h2>アレルゲン物質で絞り込む</h2>
+            <p class="filter-instruction">まず、絞り込みたいアレルゲン物質を下のリストから選択してください。</p>
+
+            <div class="filter-container">
+                <div class="allergen-group">
+                    <h3>特定原材料8品目</h3>
+                    <div class="filter-options">
+                        <label><input type="checkbox" name="allergen" value="egg"> 卵</label>
+                        <label><input type="checkbox" name="allergen" value="milk"> 乳</label>
+                        <label><input type="checkbox" name="allergen" value="wheat"> 小麦</label>
+                        <label><input type="checkbox" name="allergen" value="soba"> そば</label>
+                        <label><input type="checkbox" name="allergen" value="peanut"> 落花生</label>
+                        <label><input type="checkbox" name="allergen" value="shrimp"> えび</label>
+                        <label><input type="checkbox" name="allergen" value="crab"> かに</label>
+                        <label><input type="checkbox" name="allergen" value="walnut"> くるみ</label>
+                    </div>
+                </div>
+
+                <div class="allergen-group">
+                    <h3>特定原材料に準ずる20品目</h3>
+                    <div class="filter-options">
+                        <label><input type="checkbox" name="allergen" value="almond"> アーモンド</label>
+                        <label><input type="checkbox" name="allergen" value="abalone"> あわび</label>
+                        <label><input type="checkbox" name="allergen" value="squid"> いか</label>
+                        <label><input type="checkbox" name="allergen" value="salmon_roe"> いくら</label>
+                        <label><input type="checkbox" name="allergen" value="orange"> オレンジ</label>
+                        <label><input type="checkbox" name="allergen" value="cashew_nut"> カシューナッツ</label>
+                        <label><input type="checkbox" name="allergen" value="kiwi"> キウイフルーツ</label>
+                        <label><input type="checkbox" name="allergen" value="beef"> 牛肉</label>
+                        <label><input type="checkbox" name="allergen" value="sesame"> ごま</label>
+                        <label><input type="checkbox" name="allergen" value="salmon"> さけ</label>
+                        <label><input type="checkbox" name="allergen" value="mackerel"> さば</label>
+                        <label><input type="checkbox" name="allergen" value="soybean"> 大豆</label>
+                        <label><input type="checkbox" name="allergen" value="chicken"> 鶏肉</label>
+                        <label><input type="checkbox" name="allergen" value="banana"> バナナ</label>
+                        <label><input type="checkbox" name="allergen" value="pork"> 豚肉</label>
+                        <label><input type="checkbox" name="allergen" value="matsutake"> まつたけ</label>
+                        <label><input type="checkbox" name="allergen" value="peach"> もも</label>
+                        <label><input type="checkbox" name="allergen" value="yam"> やまいも</label>
+                        <label><input type="checkbox" name="allergen" value="apple"> りんご</label>
+                        <label><input type="checkbox" name="allergen" value="gelatin"> ゼラチン</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-button include" id="include-button">選択したものを**含む**メニューを表示</button>
+                <button class="filter-button exclude" id="exclude-button">選択したものを**含まない**メニューを表示</button>
+            </div>
+
+            <div class="cross-contamination-option">
+                <label><input type="checkbox" id="include-cross-contamination-checkbox"> 混入の可能性があるものも検索する</label>
+            </div>
+            
+            <p class="filter-instruction" style="margin-top: 25px;">
+                ※**特定原材料7品目**：卵、乳、小麦、そば、落花生、えび、かに<br>
+                ※**特定原材料に準ずる21品目**：アーモンド、あわび、いか、いくら、オレンジ、カシューナッツ、キウイフルーツ、牛肉、くるみ、ごま、さけ、さば、大豆、鶏肉、バナナ、豚肉、まつたけ、もも、やまいも、りんご、ゼラチン
+            </p>
+        </section>
+
+        <section class="shop-name-filter">
+            <h2>模擬店名で絞り込む</h2>
+            <select id="shop-name-select">
+                <option value="">全ての模擬店</option>
+                </select>
+            <button id="shop-name-search-button">絞り込む</button>
+            <button id="reset-all-button">すべてリセット</button>
+        </section>
+
+        <section class="menu-list">
+            <h2>メニュー一覧</h2>
+            <div class="menu-cards">
+                <div class="menu-card" 
+                     data-allergens="milk,wheat,egg,soybean"
+                     data-cross-contamination="almond,kiwi,peach,apple">
+                    <h3>クレープ チョコ</h3>
+                    <p class="shop-name">3A グランメゾン神戸</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>大豆</li>
+                        <li class="cross-contamination">アーモンド</li>
+                        <li class="cross-contamination">キウイフルーツ</li>
+                        <li class="cross-contamination">もも</li>
+                        <li class="cross-contamination">りんご</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="milk,wheat,egg,soybean"
+                     data-cross-contamination="almond,kiwi,peach,apple">
+                    <h3>クレープ いちご</h3>
+                    <p class="shop-name">3A グランメゾン神戸</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>大豆</li>
+                    <li class="cross-contamination">アーモンド</li>
+                    <li class="cross-contamination">キウイフルーツ</li>
+                    <li class="cross-contamination">もも</li>
+                    <li class="cross-contamination">りんご</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="wheat,egg,milk,soybean"
+                     data-cross-contamination="">
+                    <h3>クレープ キャラメル</h3>
+                    <p class="shop-name">3A グランメゾン神戸</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li> 
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note">※トッピングのミニドーナツには「はちみつ」が使用されているので、1歳未満の乳児には絶対に与えないでください。</p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="wheat,egg,milk,soybean"
+                     data-cross-contamination="">
+                    <h3>クレープ まっちゃ</h3>
+                    <p class="shop-name">3A グランメゾン神戸</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li> 
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note">※注記があればここに記述</p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="wheat,egg,milk,soybean,pork,apple,gelatin"
+                     data-cross-contamination="mackerel">
+                    <h3>たこ焼き ソース</h3>
+                    <p class="shop-name">3B 姫のB宮たこ焼き</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>大豆</li>
+                        <li>豚肉</li>
+                        <li>りんご</li>
+                        <li>ゼラチン</li>
+                        <li class="cross-contamination">さば</li>
+                    </ul>
+                    <p class="menu-note">※たこは「えび・かに」を食べています。</p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="shrimp,egg,milk,soybean,pork,apple,gelatin"
+                     data-cross-contamination="">
+                    <h3>たこ焼き 明太マヨ</h3>
+                    <p class="shop-name">3B 姫のB宮たこ焼き</p>
+                    <ul class="allergens-info">
+                        <li>えび</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>大豆</li>
+                        <li>豚肉</li>
+                        <li>りんご</li>
+                        <li>ゼラチン</li>
+                    </ul>
+                    <p class="menu-note">※たこは「えび・かに」を食べています。</p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="egg,milk,soybean,pork,gelatin"
+                     data-cross-contamination="">
+                    <h3>たこ焼き タルタル</h3>
+                    <p class="shop-name">3B 姫のB宮たこ焼き</p>
+                    <ul class="allergens-info">
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>大豆</li>
+                        <li>豚肉</li>
+                        <li>ゼラチン</li>
+                    </ul>
+                    <p class="menu-note">※たこは「えび・かに」を食べています。</p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                
+                <div class="menu-card" 
+                     data-allergens="wheat,egg,milk,soybean,chicken,pork"
+                     data-cross-contamination="soba">
+                    <h3>油そば</h3>
+                    <p class="shop-name">3C 浅羽のそばに油そば</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>大豆</li>
+                        <li>鶏肉</li>
+                        <li>豚肉</li>
+                        <li class="cross-contamination">そば</li>
+                    </ul>
+                    <p class="menu-note">※トッピングののりは「えび・かに」がいる海域で採取されています。</p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="wheat,soybean,chicken"
+                     data-cross-contamination="egg,milk,sesame,pork,yam">
+                    <h3>フライドチキン プレーン</h3>
+                    <p class="shop-name">3D イワタッキーフライドチキン(IFC)</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>大豆</li>
+                        <li>鶏肉</li>
+                        <li class="cross-contamination">豚肉</li>
+                        <li class="cross-contamination">卵</li>
+                        <li class="cross-contamination">乳</li>
+                        <li class="cross-contamination">ごま</li>
+                        <li class="cross-contamination">やまいも</li>
+                    </ul>
+                    <p class="menu-note">※セルフサービス ふりふりシーズニングパウダーは「豚肉」を含んでいます。</p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="wheat,egg,milk,abalone,soybean"
+                     data-cross-contamination="">
+                    <h3>チュロス プレーン</h3>
+                    <p class="shop-name">3E ETO CHURROS</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>あわび</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="wheat,milk,egg,abalone,soybean"
+                     data-cross-contamination="">
+                    <h3>チュロス チョコ</h3>
+                    <p class="shop-name">3E ETO CHURROS</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>乳</li>
+                        <li>卵</li>
+                        <li>あわび</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="wheat,milk,egg,abalone,soybean"
+                     data-cross-contamination="">
+                    <h3>チュロス いちご</h3>
+                    <p class="shop-name">3E ETO CHURROS</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>乳</li>
+                        <li>卵</li>
+                        <li>あわび</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="wheat,milk,egg,abalone,soybean"
+                     data-cross-contamination="">
+                    <h3>チュロス シナモン</h3>
+                    <p class="shop-name">3E ETO CHURROS</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>乳</li>
+                        <li>卵</li>
+                        <li>あわび</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="wheat,milk,egg,abalone,soybean"
+                     data-cross-contamination="">
+                    <h3>チュロス 抹茶</h3>
+                    <p class="shop-name">3E ETO CHURROS</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>乳</li>
+                        <li>卵</li>
+                        <li>あわび</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="wheat,soybean,chicken"
+                     data-cross-contamination="shrimp,egg,milk,beef,sesame,yam,apple">
+                    <h3>焼き鳥 もも</h3>
+                    <p class="shop-name">3F 令和の鳥</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>大豆</li>
+                        <li>鶏肉</li>
+                        <li class="cross-contamination">えび</li>
+                        <li class="cross-contamination">卵</li>
+                        <li class="cross-contamination">乳</li>
+                        <li class="cross-contamination">牛肉</li>
+                        <li class="cross-contamination">ごま</li>
+                        <li class="cross-contamination">やまいも</li>
+                        <li class="cross-contamination">りんご</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="wheat,soybean,chicken"
+                     data-cross-contamination="shrimp,egg,sesame,pork,apple">
+                    <h3>焼き鳥 皮</h3>
+                    <p class="shop-name">3F 令和の鳥</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>大豆</li>
+                        <li>鶏肉</li>
+                        <li class="cross-contamination">えび</li>
+                        <li class="cross-contamination">卵</li>
+                        <li class="cross-contamination">ごま</li>
+                        <li class="cross-contamination">豚肉</li>
+                        <li class="cross-contamination">りんご</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="wheat,soybean,chicken"
+                     data-cross-contamination="egg,milk,orange,sesame,apple,gelatin">
+                    <h3>焼き鳥 つくね</h3>
+                    <p class="shop-name">3F 令和の鳥</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>大豆</li>
+                        <li>鶏肉</li>
+                        <li class="cross-contamination">卵</li>
+                        <li class="cross-contamination">乳</li>
+                        <li class="cross-contamination">オレンジ</li>
+                        <li class="cross-contamination">ごま</li>
+                        <li class="cross-contamination">りんご</li>
+                        <li class="cross-contamination">ゼラチン</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="chicken"
+                     data-cross-contamination="wheat,egg,milk,orange,sesame,apple,gelatin">
+                    <h3>焼き鳥 ねぎま</h3>
+                    <p class="shop-name">3F 令和の鳥</p>
+                    <ul class="allergens-info">
+                        <li>鶏肉</li>
+                        <li class="cross-contamination">小麦</li>
+                        <li class="cross-contamination">卵</li>
+                        <li class="cross-contamination">乳</li>
+                        <li class="cross-contamination">オレンジ</li>
+                        <li class="cross-contamination">ごま</li>
+                        <li class="cross-contamination">りんご</li>
+                        <li class="cross-contamination">ゼラチン</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="wheat,soybean"
+                     data-cross-contamination="egg,milk,beef,sesame,chicken,peach,apple,gelatin">
+                    <h3>たれ</h3>
+                    <p class="shop-name">3F 令和の鳥</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>大豆</li>
+                        <li class="cross-contamination">卵</li>
+                        <li class="cross-contamination">乳</li>
+                        <li class="cross-contamination">牛肉</li>
+                        <li class="cross-contamination">ごま</li>
+                        <li class="cross-contamination">鶏肉</li>
+                        <li class="cross-contamination">もも</li>
+                        <li class="cross-contamination">りんご</li>
+                        <li class="cross-contamination">ゼラチン</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="wheat,egg,milk,soybean"
+                     data-cross-contamination="">
+                    <h3>ワッフル ココア</h3>
+                    <p class="shop-name">3G Mrs.GREEN's WAFFLE</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="wheat,egg,milk,soybean"
+                     data-cross-contamination="">
+                    <h3>ワッフル 抹茶</h3>
+                    <p class="shop-name">3G Mrs.GREEN's WAFFLE</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="walnut,wheat,egg,milk,almond,cashew_nut,soybean"
+                     data-cross-contamination="">
+                    <h3>ワッフル メープル</h3>
+                    <p class="shop-name">3G Mrs.GREEN's WAFFLE</p>
+                    <ul class="allergens-info">
+                        <li>くるみ</li>
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>アーモンド</li>
+                        <li>カシューナッツ</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="wheat"
+                     data-cross-contamination="">
+                    <h3>県相まんじゅう</h3>
+                    <p class="shop-name">PTA学年委員会</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="wheat,soybean"
+                     data-cross-contamination="">
+                    <h3>おにぎり 博多明太子</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="wheat,egg,milk,soybean"
+                     data-cross-contamination="">
+                    <h3>おにぎり ツナマヨネーズ</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                 <div class="menu-card" 
+                     data-allergens="salmon,soybean"
+                     data-cross-contamination="">
+                    <h3>おにぎり 鮭</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>さけ</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                 <div class="menu-card" 
+                     data-allergens="wheat,sesame,soybean"
+                     data-cross-contamination="">
+                    <h3>おにぎり 日高昆布</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>ごま</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                 <div class="menu-card" 
+                     data-allergens="soybean"
+                     data-cross-contamination="">
+                    <h3>おにぎり 紀州梅</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="wheat,milk,beef,sesame,soybean,chicken,pork"
+                     data-cross-contamination="">
+                    <h3>おにぎらず 韓国風</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>乳</li>
+                        <li>牛肉</li>
+                        <li>ごま</li>
+                        <li>大豆</li>
+                        <li>鶏肉</li>
+                        <li>豚肉</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="egg,soybean,chicken"
+                     data-cross-contamination="">
+                    <h3>おにぎらず 鶏ムネたまご</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>卵</li>
+                        <li>大豆</li>
+                        <li>鶏肉</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="wheat,egg,milk"
+                     data-cross-contamination="">
+                    <h3>メロンパン</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="wheat,egg,milk"
+                     data-cross-contamination="">
+                    <h3>クリームパン</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                 <div class="menu-card" 
+                     data-allergens="wheat,milk"
+                     data-cross-contamination="">
+                    <h3>もちべえ</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>乳</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                 <div class="menu-card" 
+                     data-allergens="wheat,egg,milk,soybean"
+                     data-cross-contamination="">
+                    <h3>ちくわパン</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                 <div class="menu-card" 
+                     data-allergens="wheat,egg,milk,beef,soybean"
+                     data-cross-contamination="">
+                    <h3>コロッケパン</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>牛肉</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                 <div class="menu-card" 
+                     data-allergens="wheat,egg,milk"
+                     data-cross-contamination="">
+                    <h3>チーズフォッカッチャ</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="milk,soybean"
+                     data-cross-contamination="">
+                    <h3>カルピス</h3>
+                    <p class="shop-name">PTA学年委員会 お休み処「憩い」</p>
+                    <ul class="allergens-info">
+                        <li>乳</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="wheat,egg,milk,beef,soybean,chicken,pork,gelatin"
+                     data-cross-contamination="apple">
+                    <h3>フランクフルト</h3>
+                    <p class="shop-name">PTA本部 食い道楽 直ちゃん</p>
+                    <ul class="allergens-info">
+                        <li>小麦</li>
+                        <li>卵</li>
+                        <li>乳</li>
+                        <li>牛肉</li>
+                        <li>大豆</li>
+                        <li>鶏肉</li>
+                        <li>豚肉</li>
+                        <li>ゼラチン</li>
+                        <li class="cross-contamination">りんご</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="orange"
+                     data-cross-contamination="">
+                    <h3>なっちゃんオレンジ</h3>
+                    <p class="shop-name">PTA本部 食い道楽 直ちゃん</p>
+                    <ul class="allergens-info">
+                        <li>オレンジ</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="apple"
+                     data-cross-contamination="">
+                    <h3>Qooりんご</h3>
+                    <p class="shop-name">PTA本部 食い道楽 直ちゃん</p>
+                    <ul class="allergens-info">
+                        <li>りんご</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="milk,soybean"
+                     data-cross-contamination="">
+                    <h3>メロンクリームソーダ</h3>
+                    <p class="shop-name">PTA本部 食い道楽 直ちゃん</p>
+                    <ul class="allergens-info">
+                        <li>乳</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="peach"
+                     data-cross-contamination="">
+                    <h3>特濃ピーチスカッシュ</h3>
+                    <p class="shop-name">PTA本部 食い道楽 直ちゃん</p>
+                    <ul class="allergens-info">
+                        <li>もも</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                 <div class="menu-card" 
+                     data-allergens="orange"
+                     data-cross-contamination="">
+                    <h3>ファンタオレンジ</h3>
+                    <p class="shop-name">PTA本部 食い道楽 直ちゃん</p>
+                    <ul class="allergens-info">
+                        <li>オレンジ</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                 <div class="menu-card" 
+                     data-allergens="milk"
+                     data-cross-contamination="">
+                    <h3>午後の紅茶ミルクティー</h3>
+                    <p class="shop-name">PTA本部 食い道楽 直ちゃん</p>
+                    <ul class="allergens-info">
+                        <li>乳</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+                <div class="menu-card" 
+                     data-allergens="milk,soybean"
+                     data-cross-contamination="">
+                    <h3>アイス バニラ (クーリッシュ)</h3>
+                    <p class="shop-name">PTA本部 食い道楽 直ちゃん</p>
+                    <ul class="allergens-info">
+                        <li>乳</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="milk,soybean"
+                     data-cross-contamination="">
+                    <h3>アイス ベルギーチョコレート (クーリッシュ)</h3>
+                    <p class="shop-name">PTA本部 食い道楽 直ちゃん</p>
+                    <ul class="allergens-info">
+                        <li>乳</li>
+                        <li>大豆</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="milk"
+                     data-cross-contamination="">
+                    <h3>アイス 抹茶 (クーリッシュ)</h3>
+                    <p class="shop-name">PTA本部 食い道楽 直ちゃん</p>
+                    <ul class="allergens-info">
+                        <li>乳</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+                <div class="menu-card" 
+                     data-allergens="milk"
+                     data-cross-contamination="">
+                    <h3>アイス カルピス巨峰 (クーリッシュ)</h3>
+                    <p class="shop-name">PTA本部 食い道楽 直ちゃん</p>
+                    <ul class="allergens-info">
+                        <li>乳</li>
+                    </ul>
+                    <p class="menu-note"></p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="important-notes">
+            <h2>重要事項・ご注意</h2>
+            <p>本サイトのアレルギー情報は、SSC執行部からの資料に基づいています。</p>
+            <p>アレルギーをお持ちの方は、必ず事前にご確認の上、自己責任でご利用ください。</p>
+            <p>アレルギー情報は、各メニューのカードに記載されています。詳細は各メニューの「詳細を見る」ボタンをクリックしてください。</p>
+            <p>アレルギー情報は、変更される可能性がありますので、最新の情報を確認するために、定期的に本サイトをチェックしてください。</p>
+            <p>アレルギー情報に関するご質問やご不明な点は、文化祭運営本部までお問い合わせください。</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 文化祭実行委員会</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
