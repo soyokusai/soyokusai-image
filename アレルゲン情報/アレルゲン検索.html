@@ -20,8 +20,6 @@
             食物アレルギーをお持ちの方は、必ず事前にご確認の上、<strong>自己責任</strong>でご利用ください。<br>
             <strong>ここに掲載されていないメニューは、アレルゲンを含みません。</strong><br>
             アレルゲン情報は、各メニューのカードに記載されています。<br>
-            <span class="allergens-info li">オレンジ</span>は原材料に含まれているアレルゲン、<br>
-            <span class="cross-contamination li">黄色</span>は、調理・製造過程での混入(コンタミネーション)の可能性があるアレルゲンです。<br>
             「詳細を見る」ボタンをクリックすると、そのメニューを提供している模擬店のフロアのページに飛びます。<br>
             <strong>誤食防止のため、注文前にもう一度模擬店のスタッフにご確認ください。</strong><br>
             <strong>アレルゲン情報に関するご質問やご不明な点は、SSCまたは各模擬店までお問い合わせください。</strong><br>
@@ -100,6 +98,20 @@
         <section class="menu-list">
             <h2>メニュー一覧</h2>
             <div class="menu-cards">
+
+                <div class="menu-card" 
+                     data-allergens=""
+                     data-cross-contamination="">
+                    <h3>メニュー表示例</h3>
+                    <p class="shop-name">例示用</p>
+                    <ul class="allergens-info">
+                        <li>含まれているアレルゲン</li>
+                        <li class="cross-contamination">混入の可能性があるアレルゲン</li>
+                    </ul>
+                    <p class="menu-note">※詳細を見るを押すと、相翼祭トップページに遷移します。</p>
+                    <a href="#" class="detail-button">詳細を見る</a>
+                </div>
+
                 <div class="menu-card" 
                      data-allergens="milk,wheat,egg,soybean"
                      data-cross-contamination="almond,kiwi,peach,apple">
@@ -164,7 +176,7 @@
                         <li>乳</li>
                         <li>大豆</li>
                     </ul>
-                    <p class="menu-note">※注記があればここに記述</p>
+                    <p class="menu-note"></p>
                     <a href="#" class="detail-button">詳細を見る</a>
                 </div>
 
