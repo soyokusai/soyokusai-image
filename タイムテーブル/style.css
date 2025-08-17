@@ -185,3 +185,22 @@ h2 {
         font-size: 1em;
     }
 }
+/* Googleカレンダーのレスポンシブ対応 */
+.googleCalendar {
+    text-align: center;
+}
+
+
+.googleCalendar iframe {
+    width: 100%;
+    max-width: 800px;
+    height: 400px;
+}
+
+
+/* パソコン・タブレット用（768px以上） */
+@media (min-width: 768px) {
+    .googleCalendar iframe {
+        height: 600px;
+    }
+}
