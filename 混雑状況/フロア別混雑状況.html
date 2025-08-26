@@ -197,10 +197,10 @@
 
         /* 混雑状況ごとの色 */
         .status-実施していない { background-color: #c8c8cb; color: #000000; } /* グレー系 */
-        .status-待ち時間なし { background-color: #cbf266; color: #000000	; } /* 緑系 (空いています) */
-        .status-10分未満 { background-color: #ffff99; color: 	#000000	; } /* 黄色系 (やや混雑) */
-        .status-10分以上 { background-color: #ff9900; color: #ffffff; } /* 赤系 (混雑) */
-        .status-30分以上 { background-color: #9a0079; color: #ffffff; } /* 紫系 (超混雑) */
+        .status-空いています { background-color: #cbf266; color: #000000	; } /* 緑系 (空いています) */
+        .status-やや混雑 { background-color: #ffff99; color: 	#000000	; } /* 黄色系 (やや混雑) */
+        .status-混雑 { background-color: #ff9900; color: #ffffff; } /* 赤系 (混雑) */
+        .status-とても混雑 { background-color: #9a0079; color: #ffffff; } /* 紫系 (超混雑) */
         .status-売り切れ・終了 { background-color: #ff2800; color: #ffffff; } /* 青系 (売り切れ・終了) */
 
         .event-comment {
@@ -570,10 +570,10 @@
         function getStatusClass(status) {
             switch (status) {
                 case '実施していない': return 'status-実施していない';
-                case '待ち時間なし': return 'status-待ち時間なし';
-                case '10分未満': return 'status-10分未満';
-                case '10分以上': return 'status-10分以上';
-                case '30分以上': return 'status-30分以上';
+                case '空いています': return 'status-空いています';
+                case 'やや混雑': return 'status-やや混雑';
+                case '混雑': return 'status-混雑';
+                case 'とても混雑': return 'status-とても混雑';
                 case '売り切れ・終了': return 'status-売り切れ・終了';
                 default: return '';
             }
