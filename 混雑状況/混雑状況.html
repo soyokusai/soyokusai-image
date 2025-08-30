@@ -183,10 +183,10 @@
         }
         /* 新しい状況名に合わせて色を調整 */
         .status-実施していない { background-color: #c8c8cb; color: #000000; } /* グレー系 */
-        .status-待ち時間なし { background-color: #cbf266; color: #000000	; } /* 緑系 (空いています) */
-        .status-10分未満 { background-color: #ffff99; color: 	#000000	; } /* 黄色系 (やや混雑) */
-        .status-10分以上 { background-color: #ff9900; color: #ffffff; } /* 赤系 (混雑) */
-        .status-30分以上 { background-color: #9a0079; color: #ffffff; } /* 紫系 (超混雑) */
+        .status-空いています { background-color: #cbf266; color: #000000	; } /* 緑系 (空いています) */
+        .status-やや混雑 { background-color: #ffff99; color: 	#000000	; } /* 黄色系 (やや混雑) */
+        .status-混雑 { background-color: #ff9900; color: #ffffff; } /* 赤系 (混雑) */
+        .status-とても混雑 { background-color: #9a0079; color: #ffffff; } /* 紫系 (超混雑) */
         .status-売り切れ・終了 { background-color: #ff2800; color: #ffffff; } /* 青系 (売り切れ・終了) */
 
 
@@ -240,10 +240,10 @@
             ・各企画の混雑状況は、色分けされたセルで表示されます。<br>
             ・状況の色は以下の通りです：<br>
             ・実施していない：<span class="status-実施していない">グレー</span><br>
-            ・待ち時間なし：<span class="status-待ち時間なし">明るい黄緑</span><br>
-            ・10分未満：<span class="status-10分未満">クリーム</span><br>
-            ・10分以上：<span class="status-10分以上">オレンジ</span><br>
-            ・30分以上：<span class="status-30分以上">紫</span><br>
+            ・空いています：<span class="status-空いています">明るい黄緑</span><br>
+            ・やや混雑：<span class="status-やや混雑">クリーム</span><br>
+            ・混雑：<span class="status-混雑">オレンジ</span><br>
+            ・とても混雑：<span class="status-とても混雑">紫</span><br>
             ・売り切れ・終了：<span class="status-売り切れ・終了">赤</span><br>
             ・各企画の年、組、団体名、場所(棟)、場所(階)、使用教室名、ジャンルも表示されます。<br>
             ・企画名のセルは固定されているため、スクロールしても常に表示されます。<br>
@@ -265,6 +265,7 @@
     <div id="lastUpdateTimeContainer">
         最終更新: <span id="lastUpdateTime">--/-- --:--</span>
         <div class="theme-links"> <a href="https://soyokusai.github.io/soyokusai-image/%E6%B7%B7%E9%9B%91%E7%8A%B6%E6%B3%81/フロア別混雑状況.html" style="color: #0041ff; text-decoration: none; margin-left: 10px;">表示方式を切り替える</a>
+        <div class="edit-links"> <a href="https://jstrieb.github.io/link-lock/#eyJ2IjoiMC4wLjEiLCJlIjoibStwb1JSR1psM3NYUTNrNFdTc1BLM0NsRHQzbFVWTUtpUUpucGxEZVlXRmd3K3NTNlozdEVVNnhxLzFGZUttRHlkaG5xamRyZEJBRU83cXQveHNMcXpvcm5xdlBLZDNYYnBYMlI2UVlBZElHV2JSdmM2LzV5dU1MZnVHUVFqSlNTeDhlalFLalNwMU0xNW9uRUxGSzZBdm1yWUk9IiwiaCI6IuOCouOCr+OCu+OCueeUqOS6jOasoeWFg+OCs+ODvOODieOCt+ODvOODiOS4i+mDqOOBq+iomOi8ieOBl+OBpuOBhOOBvuOBmeOAgiIsInMiOiI5VnFaZlNNN1BVOEdzUDBZRUJndmNnPT0iLCJpIjoicUVXRnpaRENnVFRta3RTUyJ9" style="color: #0041ff; text-decoration: none; margin-left: 10px;">編集はこちらから〈県相生専用〉</a>
     </div>
 
     <div class="filter-search-container">
@@ -320,16 +321,16 @@
                     <input type="checkbox" name="status" value="実施していない" checked> 実施していない
                 </label>
                 <label>
-                    <input type="checkbox" name="status" value="待ち時間なし" checked> 待ち時間なし
+                    <input type="checkbox" name="status" value="空いています" checked> 空いています
                 </label>
                 <label>
-                    <input type="checkbox" name="status" value="10分未満" checked> 10分未満
+                    <input type="checkbox" name="status" value="やや混雑" checked> やや混雑
                 </label>
                 <label>
-                    <input type="checkbox" name="status" value="10分以上" checked> 10分以上
+                    <input type="checkbox" name="status" value="混雑" checked> 混雑
                 </label>
                 <label>
-                    <input type="checkbox" name="status" value="30分以上" checked> 30分以上
+                    <input type="checkbox" name="status" value="とても混雑" checked> とても混雑
                 </label>
                 <label>
                     <input type="checkbox" name="status" value="売り切れ・終了" checked> 売り切れ・終了
@@ -594,10 +595,10 @@
                     let statusClass = '';
                     switch (item.状況) {
                         case '実施していない': statusClass = 'status-実施していない'; break;
-                        case '待ち時間なし': statusClass = 'status-待ち時間なし'; break;
-                        case '10分未満': statusClass = 'status-10分未満'; break;
-                        case '10分以上': statusClass = 'status-10分以上'; break;
-                        case '30分以上': statusClass = 'status-30分以上'; break;
+                        case '空いています': statusClass = 'status-空いています'; break;
+                        case 'やや混雑': statusClass = 'status-やや混雑'; break;
+                        case '混雑': statusClass = 'status-混雑'; break;
+                        case 'とても混雑': statusClass = 'status-とても混雑'; break;
                         case '売り切れ・終了': statusClass = 'status-売り切れ・終了'; break; 
                         default: statusClass = '';
                     }
