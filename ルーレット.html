@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>840択 ランダム数字表示 (スタート・ストップ)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+            margin: 0;
+            text-align: center;
+        }
+
+        #display {
+            font-size: 8em;
+            font-weight: bold;
+            color: #333;
+            min-width: 300px;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        button {
+            padding: 18px 40px;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        #startButton {
+            background-color: #4CAF50;
+        }
+        #stopButton {
+            background-color: #f44336;
+        }
+        
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>1から840までのランダムな数字</h1>
+    <div id="display">---</div>
+    <div class="buttons">
+        <button id="startButton" onclick="startLottery()">抽選開始</button>
+        <button id="stopButton" onclick="stopLottery()" disabled>ストップ</button>
+    </div>
+
+    <script>
+        const displayElement = document.getElementById('display');
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        let intervalId;
+
+        function startLottery() {
+            // スタートボタンを無効化し、ストップボタンを有効化
+            startButton.disabled = true;
+            stopButton.disabled = false;
+            
+            // 表示色をリセット
+            displayElement.style.color = '#333';
+
+            // 高速で数字を切り替える
+            intervalId = setInterval(() => {
+                const randomNumber = Math.floor(Math.random() * 840) + 1;
+                displayElement.textContent = randomNumber;
+            }, 50);
+        }
+
+        function stopLottery() {
+            // 数字の更新を停止
+            clearInterval(intervalId);
+
+            // 最終的な当選数字を決定
+            const finalNumber = Math.floor(Math.random() * 840) + 1;
+            displayElement.textContent = finalNumber;
+            displayElement.style.color = '#d9534f'; // 色を変えて強調
+
+            // ボタンの状態をリセット
+            startButton.disabled = false;
+            stopButton.disabled = true;
+        }
+    </script>
+</body>
+</html>
