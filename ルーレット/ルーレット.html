@@ -3,26 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>当選番号表示ツール</title>
+    <title>840択 抽選システム</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
             background-color: #f0f2f5;
             margin: 0;
+        }
+
+        .main-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+        }
+        
+        .lottery-content {
             text-align: center;
         }
 
+        .image-container img {
+            max-width: 400px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ここを修正しました */
         #display {
-            font-size: 15em;
+            font-size: 20em;
             font-weight: bold;
             color: #333;
-            min-width: 300px;
-            min-height: 150px;
+            width: 600px; /* 幅を固定 */
+            height: 300px; /* 高さを固定 */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -72,28 +89,45 @@
 </head>
 <body>
 
-    <h1>当選番号</h1>
-    <div id="display">---</div>
-    <div class="buttons">
-        <button id="startButton" onclick="startLottery()">抽選開始</button>
-        <button id="stopButton" onclick="stopLottery()" disabled>ストップ</button>
+    <div class="main-container">
+
+        <div class="lottery-content">
+            <h1>当選番号は…</h1>
+            <div id="display">---</div>
+            <div class="buttons">
+                <button id="startButton" onclick="startLottery()">抽選開始</button>
+                <button id="stopButton" onclick="stopLottery()" disabled>ストップ</button>
+            </div>
+        </div>
+
+        <div class="image-container">
+            <img src="そうよくサイ.png" alt="抽選関連の画像">
+        </div>
+        
     </div>
+
+    <audio id="startSound" src="start.mp3" loop preload="auto"></audio>
+    <audio id="stopSound" src="stop.mp3" preload="auto"></audio>
 
     <script>
         const displayElement = document.getElementById('display');
         const startButton = document.getElementById('startButton');
         const stopButton = document.getElementById('stopButton');
+        
+        const startSound = document.getElementById('startSound');
+        const stopSound = document.getElementById('stopSound');
+        
         let intervalId;
 
         function startLottery() {
-            // スタートボタンを無効化し、ストップボタンを有効化
+            startSound.currentTime = 0;
+            startSound.play();
+
             startButton.disabled = true;
             stopButton.disabled = false;
             
-            // 表示色をリセット
             displayElement.style.color = '#333';
 
-            // 高速で数字を切り替える
             intervalId = setInterval(() => {
                 const randomNumber = Math.floor(Math.random() * 840) + 1;
                 displayElement.textContent = randomNumber;
@@ -101,15 +135,18 @@
         }
 
         function stopLottery() {
-            // 数字の更新を停止
+            startSound.pause();
+            startSound.currentTime = 0;
+
+            stopSound.currentTime = 0;
+            stopSound.play();
+            
             clearInterval(intervalId);
 
-            // 最終的な当選数字を決定
             const finalNumber = Math.floor(Math.random() * 840) + 1;
             displayElement.textContent = finalNumber;
-            displayElement.style.color = '#d9534f'; // 色を変えて強調
+            displayElement.style.color = '#d9534f';
 
-            // ボタンの状態をリセット
             startButton.disabled = false;
             stopButton.disabled = true;
         }
