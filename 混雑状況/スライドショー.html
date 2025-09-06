@@ -289,337 +289,338 @@
         <i class="material-icons">arrow_upward</i>
     </button>
 
+<script>
+    // ★★★ ここにあなたのGoogle Apps Script ウェブアプリのURLを貼り付けてください ★★★
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSv-gycem2VzkHe1BAZIOZz3GlT4LPnf188qEH7guY1w399NfojC645zdMZH64RiKaGw/exec'; 
 
-    <script>
-        // ★★★ ここにあなたのGoogle Apps Script ウェブアプリのURLを貼り付けてください ★★★
-        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSv-gycem2VzkHe1BAZIOZz3GlT4LPnf188qEH7guY1w399NfojC645zdMZH64RiKaGw/exec'; 
+const slideChangeDelay = 10000; // 各フロアスライドの表示時間 (10秒)
+const transitionDuration = 800; // CSSのtransition時間と同じ (0.8秒 = 800ms)
+const fetchInterval = 5 * 60 * 1000; // データ更新間隔 (5分)
 
-        const slideChangeDelay = 10000; // 各フロアスライドの表示時間 (10秒)
-        const transitionDuration = 800; // CSSのtransition時間と同じ (0.8秒 = 800ms)
-        const fetchInterval = 5 * 60 * 1000; // データ更新間隔 (5分)
+let allFloorSlides = []; // フロアスライドのデータ配列
+let currentSlideIndex = 0;
+let slideshowInterval; // スライド切り替え用インターバル
+let scrollBtnLogicInitialized = false; // ボタンロジックが初期化されたか追跡するフラグ
 
-        let allFloorSlides = []; // フロアスライドのデータ配列
-        let currentSlideIndex = 0;
-        let slideshowInterval; // スライド切り替え用インターバル
-        let scrollBtnLogicInitialized = false; // ボタンロジックが初期化されたか追跡するフラグ
+document.addEventListener('DOMContentLoaded', () => {
+    startSlideshow(); // 初回表示と更新開始
+    // ボタンロジックはスライドが生成された後に初期化する必要があるため、
+    // fetchAndPrepareSlides関数内で呼び出す
+});
 
-        document.addEventListener('DOMContentLoaded', () => {
-            startSlideshow(); // 初回表示と更新開始
-            // ボタンロジックはスライドが生成された後に初期化する必要があるため、
-            // fetchAndPrepareSlides関数内で呼び出す
+async function startSlideshow() {
+    await fetchAndPrepareSlides(); // 最初のデータ取得とスライド準備
+    
+    // データ取得を定期的に行う
+    setInterval(fetchAndPrepareSlides, fetchInterval);
+}
+
+async function fetchAndPrepareSlides() {
+    const loadingElement = document.getElementById('loading');
+    const slideshowContainer = document.getElementById('slideshow-container');
+
+    loadingElement.style.display = 'flex'; // ローディング表示
+
+    try {
+        const response = await fetch(GAS_WEB_APP_URL);
+        if (!response.ok) {
+            throw new Error(`HTTPエラー: ${response.status}`);
+        }
+        const fetchedData = await response.json();
+
+        // 企画名が空の行はフィルタリング
+        const filteredEvents = fetchedData.filter(item => 
+            item.企画名 && String(item.企画名).trim() !== ''
+        );
+        
+        if (filteredEvents.length === 0) {
+            slideshowContainer.innerHTML = '<div class="slide-container active"><div class="slide-header"><h2>現在、表示可能な企画はありません</h2></div><div class="event-list-in-slide">情報を更新中です。</div></div>';
+            if (slideshowInterval) clearInterval(slideshowInterval);
+            return;
+        }
+
+        updateLastUpdateTime(fetchedData);
+        
+        const groupedEvents = groupEventsByBuildingAndFloor(filteredEvents);
+        allFloorSlides = createFloorSlideData(groupedEvents);
+
+        if (allFloorSlides.length === 0) {
+            slideshowContainer.innerHTML = '<div class="slide-container active"><div class="slide-header"><h2>表示できるフロア情報がありません</h2></div><div class="event-list-in-slide">情報を更新中です。</div></div>';
+            if (slideshowInterval) clearInterval(slideshowInterval);
+            return;
+        }
+
+        // スライドショーのインターバルをクリアして再設定
+        if (slideshowInterval) {
+            clearInterval(slideshowInterval);
+        }
+        currentSlideIndex = 0; // データ更新時にスライドを最初に戻す
+
+        // 最初のスライドを表示
+        renderFloorSlide(allFloorSlides[currentSlideIndex]);
+        
+        // スクロールボタンのロジックを初回のみ初期化
+        if (!scrollBtnLogicInitialized) {
+            initializeScrollToTopBtn();
+            scrollBtnLogicInitialized = true;
+        }
+
+        // 次のスライドを表示するタイマーを開始
+        slideshowInterval = setInterval(() => {
+            currentSlideIndex = (currentSlideIndex + 1) % allFloorSlides.length;
+            renderFloorSlide(allFloorSlides[currentSlideIndex]);
+        }, slideChangeDelay);
+
+    } catch (error) {
+        console.error('データ取得エラー:', error);
+        slideshowContainer.innerHTML = '<div class="slide-container active"><div class="slide-header"><h2>エラーが発生しました</h2></div><div class="event-list-in-slide">データを読み込めませんでした。GASのURLを確認するか、時間を置いてから再度お試しください。</div></div>';
+    } finally {
+        loadingElement.style.display = 'none';
+    }
+}
+
+function updateLastUpdateTime(data) {
+    let latestUpdateTime = null;
+    data.forEach(item => {
+        const itemUpdateTime = item.更新 || item.更新時刻;
+        if (itemUpdateTime) {
+            const currentItemDate = new Date(itemUpdateTime);
+            if (!latestUpdateTime || currentItemDate > latestUpdateTime) {
+                latestUpdateTime = currentItemDate;
+            }
+        }
+    });
+
+    if (latestUpdateTime) {
+        document.getElementById('lastUpdateTime').textContent = latestUpdateTime.toLocaleString('ja-JP', { 
+            year: 'numeric', month: '2-digit', day: '2-digit', 
+            hour: '2-digit', minute: '2-digit' 
         });
+    } else {
+        document.getElementById('lastUpdateTime').textContent = '不明';
+    }
+}
 
-        async function startSlideshow() {
-            await fetchAndPrepareSlides(); // 最初のデータ取得とスライド準備
-            
-            // データ取得を定期的に行う
-            setInterval(fetchAndPrepareSlides, fetchInterval);
+function groupEventsByBuildingAndFloor(events) {
+    const grouped = {};
+    events.forEach(event => {
+        const building = event['場所(棟)'] ? String(event['場所(棟)']).trim() : '';
+        const floor = event['場所(階)'] ? String(event['場所(階)']).trim() : '';
+        const groupKey = `${building || '不明な棟'}-${floor || '不明な階'}`;
+        if (!grouped[groupKey]) {
+            grouped[groupKey] = {
+                building: building,
+                floor: floor,
+                events: []
+            };
         }
+        grouped[groupKey].events.push(event);
+    });
 
-        async function fetchAndPrepareSlides() {
-            const loadingElement = document.getElementById('loading');
-            const slideshowContainer = document.getElementById('slideshow-container');
-
-            loadingElement.style.display = 'flex'; // ローディング表示
-
-            try {
-                const response = await fetch(GAS_WEB_APP_URL);
-                if (!response.ok) {
-                    throw new Error(`HTTPエラー: ${response.status}`);
-                }
-                const fetchedData = await response.json();
-
-                // 企画名が空の行はフィルタリング
-                const filteredEvents = fetchedData.filter(item => 
-                    item.企画名 && String(item.企画名).trim() !== ''
-                );
-                
-                if (filteredEvents.length === 0) {
-                    slideshowContainer.innerHTML = '<div class="slide-container active"><div class="slide-header"><h2>現在、表示可能な企画はありません</h2></div><div class="event-list-in-slide">情報を更新中です。</div></div>';
-                    if (slideshowInterval) clearInterval(slideshowInterval);
-                    return;
-                }
-
-                updateLastUpdateTime(fetchedData);
-                
-                const groupedEvents = groupEventsByBuildingAndFloor(filteredEvents);
-                allFloorSlides = createFloorSlideData(groupedEvents);
-
-                if (allFloorSlides.length === 0) {
-                    slideshowContainer.innerHTML = '<div class="slide-container active"><div class="slide-header"><h2>表示できるフロア情報がありません</h2></div><div class="event-list-in-slide">情報を更新中です。</div></div>';
-                    if (slideshowInterval) clearInterval(slideshowInterval);
-                    return;
-                }
-
-                // スライドショーのインターバルをクリアして再設定
-                if (slideshowInterval) {
-                    clearInterval(slideshowInterval);
-                }
-                currentSlideIndex = 0; // データ更新時にスライドを最初に戻す
-
-                // 最初のスライドを表示
-                renderFloorSlide(allFloorSlides[currentSlideIndex]);
-                
-                // スクロールボタンのロジックを初回のみ初期化
-                if (!scrollBtnLogicInitialized) {
-                    initializeScrollToTopBtn();
-                    scrollBtnLogicInitialized = true;
-                }
-
-                // 次のスライドを表示するタイマーを開始
-                slideshowInterval = setInterval(() => {
-                    currentSlideIndex = (currentSlideIndex + 1) % allFloorSlides.length;
-                    renderFloorSlide(allFloorSlides[currentSlideIndex]);
-                }, slideChangeDelay);
-
-            } catch (error) {
-                console.error('データ取得エラー:', error);
-                slideshowContainer.innerHTML = '<div class="slide-container active"><div class="slide-header"><h2>エラーが発生しました</h2></div><div class="event-list-in-slide">データを読み込めませんでした。GASのURLを確認するか、時間を置いてから再度お試しください。</div></div>';
-            } finally {
-                loadingElement.style.display = 'none';
+    const customBuildingOrder = ['A', 'B', 'C', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'D', '屋外', 'その他', '不明な棟'];
+    const sortedGroupKeys = Object.keys(grouped).sort((keyA, keyB) => {
+        const groupA = grouped[keyA];
+        const groupB = grouped[keyB];
+        const indexA = customBuildingOrder.indexOf(groupA.building);
+        const indexB = customBuildingOrder.indexOf(groupB.building);
+        if (indexA !== -1 && indexB !== -1) {
+            if (indexA !== indexB) {
+                return indexA - indexB;
             }
+        } else if (indexA !== -1) {
+            return -1;
+        } else if (indexB !== -1) {
+            return 1;
         }
+        if (groupA.floor === '不明な階' && groupB.floor !== '不明な階') return 1;
+        if (groupA.floor !== '不明な階' && groupB.floor === '不明な階') return -1;
+        const numA = parseInt(groupA.floor);
+        const numB = parseInt(groupB.floor);
+        if (!isNaN(numA) && !isNaN(numB)) {
+            return numA - numB;
+        }
+        return groupA.floor.localeCompare(groupB.floor);
+    });
 
-        function updateLastUpdateTime(data) {
-            let latestUpdateTime = null;
-            data.forEach(item => {
-                const itemUpdateTime = item.更新 || item.更新時刻;
-                if (itemUpdateTime) {
-                    const currentItemDate = new Date(itemUpdateTime);
-                    if (!latestUpdateTime || currentItemDate > latestUpdateTime) {
-                        latestUpdateTime = currentItemDate;
-                    }
+    const finalGrouped = {};
+    sortedGroupKeys.forEach(key => {
+        finalGrouped[key] = grouped[key];
+    });
+    return finalGrouped;
+}
+
+// グループ化されたデータからスライドデータを生成
+function createFloorSlideData(groupedEvents) {
+    const floorSlides = [];
+    const maxItemsPerSlide = 6; // 1つのスライドに表示する項目数の上限
+
+    Object.keys(groupedEvents).forEach(groupKey => {
+        const group = groupedEvents[groupKey];
+        const events = group.events;
+        if (events.length > 0) {
+            const numberOfPages = Math.ceil(events.length / maxItemsPerSlide);
+            for (let i = 0; i < numberOfPages; i++) {
+                const start = i * maxItemsPerSlide;
+                const end = start + maxItemsPerSlide;
+                const eventsForSlide = events.slice(start, end);
+                let slideTitleContent = '';
+                // 変更: '棟'の自動追加を削除
+                if (group.building && group.building !== '屋外' && group.building !== 'その他' && group.building !== '不明な棟') {
+                    slideTitleContent += `${group.building}`;
+                } else if (group.building && group.building === '屋外') {
+                    slideTitleContent += '屋外';
+                } else if (group.building && group.building === 'その他') {
+                    slideTitleContent += 'その他';
                 }
-            });
-
-            if (latestUpdateTime) {
-                document.getElementById('lastUpdateTime').textContent = latestUpdateTime.toLocaleString('ja-JP', { 
-                    year: 'numeric', month: '2-digit', day: '2-digit', 
-                    hour: '2-digit', minute: '2-digit' 
+                if (group.floor !== '') {
+                    if (slideTitleContent !== '') {
+                        slideTitleContent += ' ';
+                    }
+                    if (!isNaN(parseInt(group.floor))) {
+                        slideTitleContent += `${group.floor}階`;
+                    } else {
+                        slideTitleContent += `${group.floor}`;
+                    }
+                } else if (slideTitleContent === '' && group.floor === '') {
+                    slideTitleContent = '場所情報なし'; 
+                }
+                if (numberOfPages > 1) {
+                    slideTitleContent += ` (${i + 1}/${numberOfPages})`;
+                }
+                floorSlides.push({
+                    title: slideTitleContent,
+                    events: eventsForSlide
                 });
-            } else {
-                document.getElementById('lastUpdateTime').textContent = '不明';
             }
         }
-
-        function groupEventsByBuildingAndFloor(events) {
-            const grouped = {};
-            events.forEach(event => {
-                const building = event['場所(棟)'] ? String(event['場所(棟)']).trim() : '';
-                const floor = event['場所(階)'] ? String(event['場所(階)']).trim() : '';
-                const groupKey = `${building || '不明な棟'}-${floor || '不明な階'}`;
-                if (!grouped[groupKey]) {
-                    grouped[groupKey] = {
-                        building: building,
-                        floor: floor,
-                        events: []
-                    };
-                }
-                grouped[groupKey].events.push(event);
-            });
-
-            const customBuildingOrder = ['A', 'B', 'C', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'D', '屋外', 'その他', '不明な棟'];
-            const sortedGroupKeys = Object.keys(grouped).sort((keyA, keyB) => {
-                const groupA = grouped[keyA];
-                const groupB = grouped[keyB];
-                const indexA = customBuildingOrder.indexOf(groupA.building);
-                const indexB = customBuildingOrder.indexOf(groupB.building);
-                if (indexA !== -1 && indexB !== -1) {
-                    if (indexA !== indexB) {
-                        return indexA - indexB;
-                    }
-                } else if (indexA !== -1) {
-                    return -1;
-                } else if (indexB !== -1) {
-                    return 1;
-                }
-                if (groupA.floor === '不明な階' && groupB.floor !== '不明な階') return 1;
-                if (groupA.floor !== '不明な階' && groupB.floor === '不明な階') return -1;
-                const numA = parseInt(groupA.floor);
-                const numB = parseInt(groupB.floor);
-                if (!isNaN(numA) && !isNaN(numB)) {
-                    return numA - numB;
-                }
-                return groupA.floor.localeCompare(groupB.floor);
-            });
-
-            const finalGrouped = {};
-            sortedGroupKeys.forEach(key => {
-                finalGrouped[key] = grouped[key];
-            });
-            return finalGrouped;
-        }
-
-        // グループ化されたデータからスライドデータを生成
-        function createFloorSlideData(groupedEvents) {
-            const floorSlides = [];
-            const maxItemsPerSlide = 6; // 1つのスライドに表示する項目数の上限
-
-            Object.keys(groupedEvents).forEach(groupKey => {
-                const group = groupedEvents[groupKey];
-                const events = group.events;
-                if (events.length > 0) {
-                    const numberOfPages = Math.ceil(events.length / maxItemsPerSlide);
-                    for (let i = 0; i < numberOfPages; i++) {
-                        const start = i * maxItemsPerSlide;
-                        const end = start + maxItemsPerSlide;
-                        const eventsForSlide = events.slice(start, end);
-                        let slideTitleContent = '';
-                        if (group.building && group.building !== '屋外' && group.building !== 'その他' && group.building !== '不明な棟') {
-                             slideTitleContent += `${group.building}棟`;
-                        } else if (group.building && group.building === '屋外') {
-                            slideTitleContent += '屋外';
-                        } else if (group.building && group.building === 'その他') {
-                            slideTitleContent += 'その他';
-                        }
-                        if (group.floor !== '') {
-                            if (slideTitleContent !== '') {
-                                slideTitleContent += ' ';
-                            }
-                            if (!isNaN(parseInt(group.floor))) {
-                                slideTitleContent += `${group.floor}階`;
-                            } else {
-                                slideTitleContent += `${group.floor}`;
-                            }
-                        } else if (slideTitleContent === '' && group.floor === '') {
-                             slideTitleContent = '場所情報なし'; 
-                        }
-                        if (numberOfPages > 1) {
-                            slideTitleContent += ` (${i + 1}/${numberOfPages})`;
-                        }
-                        floorSlides.push({
-                            title: slideTitleContent,
-                            events: eventsForSlide
-                        });
-                    }
-                }
-            });
-            return floorSlides;
-        }
+    });
+    return floorSlides;
+}
 
 
-        function renderFloorSlide(slideData) {
-            const slideshowContainer = document.getElementById('slideshow-container');
-            const currentActiveSlide = slideshowContainer.querySelector('.slide-container.active');
-            const newSlideDiv = document.createElement('div');
-            newSlideDiv.classList.add('slide-container');
+function renderFloorSlide(slideData) {
+    const slideshowContainer = document.getElementById('slideshow-container');
+    const currentActiveSlide = slideshowContainer.querySelector('.slide-container.active');
+    const newSlideDiv = document.createElement('div');
+    newSlideDiv.classList.add('slide-container');
 
-            let eventListHtml = '';
-            slideData.events.forEach(item => {
-                const year = item.年 ? `${item.年}年` : '';
-                const klass = item.組 ? `${item.組}組` : '';
-                const groupName = item.団体名 || '';
-                const genre = item.ジャンル || '';
-                
-                let locationText = '';
-                const building = item['場所(棟)'] ? String(item['場所(棟)']).trim() : '';
-                const floor = item['場所(階)'] ? String(item['場所(階)']).trim() : '';
-                const usedRoomName = item.使用教室名 ? String(item.使用教室名).trim() : '';
+    let eventListHtml = '';
+    slideData.events.forEach(item => {
+        const year = item.年 ? `${item.年}年` : '';
+        const klass = item.組 ? `${item.組}組` : '';
+        const groupName = item.団体名 || '';
+        const genre = item.ジャンル || '';
+        
+        let locationText = '';
+        const building = item['場所(棟)'] ? String(item['場所(棟)']).trim() : '';
+        const floor = item['場所(階)'] ? String(item['場所(階)']).trim() : '';
+        const usedRoomName = item.使用教室名 ? String(item.使用教室名).trim() : '';
 
-                if (usedRoomName !== '') {
-                    locationText = usedRoomName;
+        if (usedRoomName !== '') {
+            locationText = usedRoomName;
+        } else {
+            const parts = [];
+            // 変更: '棟'の自動追加を削除
+            if (building !== '' && building !== '不明な棟') {
+                if (building === '屋外') {
+                    parts.push('屋外');
+                } else if (building === 'その他') {
+                    parts.push('その他');
                 } else {
-                    const parts = [];
-                    if (building !== '' && building !== '不明な棟') {
-                        if (building === '屋外') {
-                            parts.push('屋外');
-                        } else if (building === 'その他') {
-                            parts.push('その他');
-                        } else {
-                            parts.push(`${building}棟`);
-                        }
-                    }
-                    if (floor !== '' && floor !== '不明な階') {
-                        if (!isNaN(parseInt(floor))) {
-                            parts.push(`${floor}階`);
-                        } else {
-                            parts.push(`${floor}`);
-                        }
-                    }
-                    locationText = parts.join(' ');
+                    parts.push(`${building}`);
                 }
-                
-                if (locationText === '') {
-                    locationText = '場所情報なし';
-                }
-
-                eventListHtml += `
-                    <li class="event-item-in-slide">
-                        <div class="event-title-in-slide">${item.企画名 || '企画名なし'}</div>
-                        <div class="event-status-in-slide ${getStatusClass(item.状況)}">${item.状況 || '不明'}</div>
-                        ${item.コメント ? `<div class="event-comment-in-slide">${item.コメント}</div>` : ''}
-                        <div class="event-details-in-slide">
-                            <span>${year}</span>
-                            <span>${klass}</span>
-                            <span>${groupName}</span>
-                            <span>${locationText}</span>
-                            <span>${genre}</span>
-                        </div>
-                    </li>
-                `;
-            });
-
-            newSlideDiv.innerHTML = `
-                <div class="slide-header"><h2>${slideData.title}</h2></div>
-                <ul class="event-list-in-slide">${eventListHtml}</ul>
-            `;
-            
-            slideshowContainer.appendChild(newSlideDiv);
-
-            if (currentActiveSlide) {
-                currentActiveSlide.classList.remove('active');
-                setTimeout(() => {
-                    if (currentActiveSlide.parentNode) {
-                        currentActiveSlide.parentNode.removeChild(currentActiveSlide);
-                    }
-                    newSlideDiv.classList.add('active');
-                }, transitionDuration); 
-            } else {
-                newSlideDiv.classList.add('active');
             }
-        }
-
-        function getStatusClass(status) {
-            switch (status) {
-                case '実施していない': return 'status-実施していない';
-                case '空いています': return 'status-空いています';
-                case 'やや混雑': return 'status-やや混雑';
-                case '混雑': return 'status-混雑';
-                case 'とても混雑': return 'status-とても混雑';
-                case '売り切れ・終了': return 'status-売り切れ・終了';
-                default: return '';
-            }
-        }
-
-        // スクロールボタンのロジックを独立した関数として定義
-        function initializeScrollToTopBtn() {
-            const scrollToTopBtn = document.getElementById('scrollToTopBtn');
-            // ★変更箇所: スクロールイベントを監視する要素をslideshowContainerからevent-list-in-slideへ変更
-            const eventListInSlide = document.querySelector('.event-list-in-slide');
-            
-            if (!eventListInSlide) {
-                console.error("event-list-in-slide要素が見つかりませんでした。");
-                return;
-            }
-
-            // スライド内のイベントリストにスクロールイベントを追加
-            eventListInSlide.addEventListener('scroll', function() {
-                // スクロール位置が200pxを超えたらボタンを表示
-                if (eventListInSlide.scrollTop > 200) {
-                    scrollToTopBtn.style.display = 'block';
+            if (floor !== '' && floor !== '不明な階') {
+                if (!isNaN(parseInt(floor))) {
+                    parts.push(`${floor}階`);
                 } else {
-                    scrollToTopBtn.style.display = 'none';
+                    parts.push(`${floor}`);
                 }
-            });
-
-            // ボタンがクリックされたらスムーズにトップへスクロール
-            scrollToTopBtn.addEventListener('click', function() {
-                eventListInSlide.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
+            }
+            locationText = parts.join(' ');
         }
-    </script>
+        
+        if (locationText === '') {
+            locationText = '場所情報なし';
+        }
+
+        eventListHtml += `
+            <li class="event-item-in-slide">
+                <div class="event-title-in-slide">${item.企画名 || '企画名なし'}</div>
+                <div class="event-status-in-slide ${getStatusClass(item.状況)}">${item.状況 || '不明'}</div>
+                ${item.コメント ? `<div class="event-comment-in-slide">${item.コメント}</div>` : ''}
+                <div class="event-details-in-slide">
+                    <span>${year}</span>
+                    <span>${klass}</span>
+                    <span>${groupName}</span>
+                    <span>${locationText}</span>
+                    <span>${genre}</span>
+                </div>
+            </li>
+        `;
+    });
+
+    newSlideDiv.innerHTML = `
+        <div class="slide-header"><h2>${slideData.title}</h2></div>
+        <ul class="event-list-in-slide">${eventListHtml}</ul>
+    `;
+    
+    slideshowContainer.appendChild(newSlideDiv);
+
+    if (currentActiveSlide) {
+        currentActiveSlide.classList.remove('active');
+        setTimeout(() => {
+            if (currentActiveSlide.parentNode) {
+                currentActiveSlide.parentNode.removeChild(currentActiveSlide);
+            }
+            newSlideDiv.classList.add('active');
+        }, transitionDuration); 
+    } else {
+        newSlideDiv.classList.add('active');
+    }
+}
+
+function getStatusClass(status) {
+    switch (status) {
+        case '実施していない': return 'status-実施していない';
+        case '空いています': return 'status-空いています';
+        case 'やや混雑': return 'status-やや混雑';
+        case '混雑': return 'status-混雑';
+        case 'とても混雑': return 'status-とても混雑';
+        case '売り切れ・終了': return 'status-売り切れ・終了';
+        default: return '';
+    }
+}
+
+// スクロールボタンのロジックを独立した関数として定義
+function initializeScrollToTopBtn() {
+    const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+    // ★変更箇所: スクロールイベントを監視する要素をslideshowContainerからevent-list-in-slideへ変更
+    const eventListInSlide = document.querySelector('.event-list-in-slide');
+    
+    if (!eventListInSlide) {
+        console.error("event-list-in-slide要素が見つかりませんでした。");
+        return;
+    }
+
+    // スライド内のイベントリストにスクロールイベントを追加
+    eventListInSlide.addEventListener('scroll', function() {
+        // スクロール位置が200pxを超えたらボタンを表示
+        if (eventListInSlide.scrollTop > 200) {
+            scrollToTopBtn.style.display = 'block';
+        } else {
+            scrollToTopBtn.style.display = 'none';
+        }
+    });
+
+    // ボタンがクリックされたらスムーズにトップへスクロール
+    scrollToTopBtn.addEventListener('click', function() {
+        eventListInSlide.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+</script>
 </body>
 </html>
